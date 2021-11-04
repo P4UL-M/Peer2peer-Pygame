@@ -46,7 +46,7 @@ def play_button():
 
     return _button
 
-secondaire = Menu("Play",parent="principale",background=f"{directory}/assets/bg_control.png")
+secondaire = Menu("Play",parent="principale",childs="Connecting",background=f"{directory}/assets/bg_control.png")
 
 @secondaire.add_button
 def back_button():
@@ -60,7 +60,6 @@ def back_button():
 
     @_button.on_click
     def back():
-        Main_Server.close()
         game.actual_menu = secondaire.get_parent()
 
     return _button
@@ -79,7 +78,7 @@ def validate_button():
     def get_pseudo():
         Main_Server.client_name = secondaire.get_button("pseudoBox").text
         Main_Server.run()
-        secondaire.get_button("pseudoBox").text = ""
+        game.actual_menu = secondaire.get_child("Connecting")
 
     return _button
 
@@ -97,9 +96,47 @@ def pseudo_input():
     def start_menu():
         Main_Server.client_name = _inputbox.text
         Main_Server.run()
-        secondaire.get_button("pseudoBox").text = ""
+        game.actual_menu = secondaire.get_child("Connecting")
 
     return _inputbox
+
+connecting = Menu("Connecting",parent="Play",childs="Online_Menu")
+
+@connecting.add_button
+def connection():
+    _button = Button(
+        name="connecting",
+        path=f"{directory}/assets/connecting.png"
+    )
+        
+    #_button.set_scale(Vector2(0.46,0.5))
+    _button.set_position(Vector2(0.5,0.5))
+
+    @_button.Event(None)
+    def check_ready():
+        if Main_Server.ready:
+            game.actual_menu = connecting.get_child("Online_Menu")
+
+    return _button
+
+online_menu = Menu("Online_Menu",parent="Play")
+
+@online_menu.add_button
+def back_button():
+    _button = Button(
+        name="back",
+        path=f"{directory}/assets/Back_Button.png"
+    )
+        
+    _button.set_scale(Vector2(0.46,0.5))
+    _button.set_position(Vector2(0.35,0.5))
+
+    @_button.on_click
+    def back():
+        Main_Server.close()
+        game.actual_menu = online_menu.get_parent()
+
+    return _button
 
 game.actual_menu = principale
 

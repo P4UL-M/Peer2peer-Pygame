@@ -293,8 +293,7 @@ class Menu:
         self.buttons:list[Button] = []
         _window.menus.append(self)
         if _window == None:
-            print("Vous devez d'abors initialiser la fenêtre")
-            raise RuntimeError
+            raise RuntimeError("Vous devez d'abors initialiser la fenêtre")
         if background!=None:
             try:
                 self.background = py.image.load(background).convert() # tuile pour le background
@@ -312,8 +311,7 @@ class Menu:
         if type(_button)==Button or type(_button)==InputBox:
             self.buttons.append(_button)
         else:
-            print("You must return a button to add, type returned was :",type(_button))
-            raise TypeError
+            raise TypeError("You must return a button to add, type returned was :",type(_button))
     
     def Update(self):
         """
@@ -351,8 +349,7 @@ class Menu:
             if _menu.name in self.childs and _menu.name == child_name:
                 return _menu
         else:
-            print("Menu not founc")
-            raise RuntimeWarning
+            raise Exception("Menu not found")
 
     def get_parent(self):
         """

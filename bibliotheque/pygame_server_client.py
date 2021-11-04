@@ -79,16 +79,3 @@ class Client(socket.socket):
         print("->",message)
         data = str.encode(message)
         self.sendall(data)
-
-
-client = Client()
-
-@client.Event
-def get_name(ctx):
-    if client.client_name == "":
-        raise Exception("You must specify a pseudo before running the client")
-    client.send_message('set_name',{'name':client.client_name})
-    
-@client.Event
-def ready(ctx):
-    client.ready = True

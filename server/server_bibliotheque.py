@@ -19,45 +19,27 @@ class context:
         for name,elt in message.items():
             setattr(self,name,elt)
 
-class Client():
+class Client(socket.socket):
     """
     class discussion avec le server
     """
-    handles:list = []
-    _marker=object()
+    handles:dict = {}
 
-    def __init__(self,parent):
-        # parent is the socket connection
-        self._parent = parent
+    def __init__(self,sock):
+        # transfer the socket to the inherance
+        super().__init__(fileno=sock.detach())
         self.client_name = ""
         # assignement of default variable
         self.ready = False
         # dict of all method for all possible event
-        self.thread = Thread(target=self.handle,daemon=True)
-       
-    def __getattr__(self, name, default=_marker):
-        if name in dir(self._parent):
-            # Get it from papa:
-            try:
-                return getattr(self._parent, name)
-            except AttributeError:
-                if default is self._marker:
-                    raise
-                return default
-
-        if name not in self.__dict__:
-            raise AttributeError(name)
-        return self.__dict__[name]  
+        self.thread = Thread(target=self.run,daemon=True)
     
-    async def init(self):
+    def run(self):
         """
         Lance le server
         """
         self.send_message(event="get_name")
-        self.thread.start()
-        while self.client_name == "":
-            pass
-        return self.client_name
+        self.handle()
 
     def send_message(self,event,args=dict()):
         """
@@ -86,29 +68,22 @@ class Client():
                 data = data.decode('utf-8')  
                 print(f"<- {self.client_name} -",data)
                 ctx = context(self,json.loads(data))
-                for func in self.handles:
-                    func(ctx.event,self,ctx)
+                if ctx.event in self.handles.keys():
+                    self.handles[ctx.event](self,ctx)
         except Exception as e:
             print(f"diconnected from {self.client_name} : {e}")
-            del SERVER.Clients_list[self.client_name]
+            if self.client_name != "":
+                del SERVER.Clients_list[self.client_name]
 
-    def Event(event):
+    def Event(func):
         """
         Ce décorateur crée une fonction qui ajoute celle ci à la liste des fonctions.
         La fonction passé en décoration n'est executé que si l'évènement est appellé.
         """
-        self = Client
-        def decorator(func):
-            if event !=None or len([_func for _func in self.handles if _func.__name__==func.__name__])!=0:
-                def wrap(_event,*args, **kwargs):
-                    if _event == event:
-                        func(*args, **kwargs)
-                self.handles.append(wrap)
-            else:
-                print("you didn't specify the event or the function you want to pass already exist")
-                raise RuntimeError
-            return True
-        return decorator
+        if func.__name__ not in Client.handles.keys():
+            Client.handles[func.__name__] = func
+        else:
+            raise RuntimeError("the function you want to pass already exist")
 
 class Server(socket.socket):
     def __init__(self):
@@ -133,20 +108,10 @@ class Server(socket.socket):
                 # acceptation de la demande de connection entrante
                 conn, address = self.accept()
                 # nouveau objet client (and not Client, we take the update class with the handle method)
+                print("New client initialization...")
                 myclient = Client(conn)
-                Thread(target=self.init_client,args=(myclient,),daemon=True).start()
+                myclient.thread.start()
         except KeyboardInterrupt:
             for _client in self.Clients_list.values():
                 _client.close()
             print("Bye !")
-        
-    def init_client(self,player:Client):
-        print("New client initialization...")
-        async def coroute():
-            name = await player.init()
-            if name in self.Clients_list.keys():
-                player.send_message(event="Bad_Name")
-                return
-            self.Clients_list[name] = player
-            player.send_message(event='ready')
-        asyncio.run(coroute())

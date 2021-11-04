@@ -60,15 +60,10 @@ class Client(socket.socket):
         Ce décorateur crée une fonction qui ajoute celle ci à la liste des fonctions.
         La fonction passé en décoration n'est executé que si l'évènement est appellé.
         """
-        if func.__name__ in [f.__name__ for f in self.handles]:
-            def wrap(_event,*args, **kwargs):
-                if _event == func.__name__:
-                    func(*args, **kwargs)
-            self.handles[func.__name__] = wrap
+        if func.__name__ not in self.handles.keys():
+            self.handles[func.__name__] = func
         else:
-            print("the function you want to pass already exist")
-            raise RuntimeError
-        return True
+            raise RuntimeError("the function you want to pass already exist")
 
     def send_message(self,event,args=dict()):
         """

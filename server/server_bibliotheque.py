@@ -70,6 +70,8 @@ class Client(socket.socket):
                 ctx = context(self,json.loads(data))
                 if ctx.event in self.handles.keys():
                     self.handles[ctx.event](self,ctx)
+                else:
+                    print("Event not found :",ctx.event)
         except Exception as e:
             print(f"diconnected from {self.client_name} : {e}")
             if self.client_name != "":

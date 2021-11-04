@@ -100,7 +100,7 @@ def pseudo_input():
 
     return _inputbox
 
-connecting = Menu("Connecting",parent="Play",childs="Online_Menu")
+connecting = Menu("Connecting",parent="Play",childs="Online_Menu",background=f"{directory}/assets/bg_control.png")
 
 @connecting.add_button
 def connection():
@@ -109,8 +109,7 @@ def connection():
         path=f"{directory}/assets/connecting.png"
     )
         
-    #_button.set_scale(Vector2(0.46,0.5))
-    _button.set_position(Vector2(0.5,0.5))
+    _button.set_position(Vector2(0.5,0.4))
 
     @_button.Event(None)
     def check_ready():
@@ -119,7 +118,43 @@ def connection():
 
     return _button
 
-online_menu = Menu("Online_Menu",parent="Play")
+@connecting.add_button
+def bad_pseudo():
+    _button = Button(
+        name="bad_pseudo",
+        path=f"{directory}/assets/Bad_Pseudo.png",
+        isactive=False
+    )
+        
+    _button.set_position(Vector2(0.5,0.4))
+
+    return _button
+
+@Main_Server.Event
+def bad_name(ctx):
+    for button in connecting.buttons:
+        if button.name == "bad_pseudo":
+            button.isactive = True
+    raise Exception("The name you enter is incorrect")
+
+@connecting.add_button
+def back_button():
+    _button = Button(
+        name="back",
+        path=f"{directory}/assets/Back_Button.png"
+    )
+        
+    _button.set_scale(Vector2(0.5,0.5))
+    _button.set_position(Vector2(0.5,0.65))
+
+    @_button.on_click
+    def back():
+        Main_Server.close()
+        game.actual_menu = connecting.get_parent()
+
+    return _button
+
+online_menu = Menu("Online_Menu",parent="Play",background=f"{directory}/assets/bg_control.png")
 
 @online_menu.add_button
 def back_button():
@@ -128,8 +163,7 @@ def back_button():
         path=f"{directory}/assets/Back_Button.png"
     )
         
-    _button.set_scale(Vector2(0.46,0.5))
-    _button.set_position(Vector2(0.35,0.5))
+    _button.set_position(Vector2(0.5,0.66))
 
     @_button.on_click
     def back():

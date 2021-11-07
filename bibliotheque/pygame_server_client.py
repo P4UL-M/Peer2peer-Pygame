@@ -21,7 +21,10 @@ class Client(socket.socket):
     def __init__(self):
         #constants
         self.client_name = ""
-        self.EXTERNAL_IP = get("https://api.ipify.org").text
+        try:
+            self.EXTERNAL_IP = get("https://api.ipify.org").text
+        except:
+            print("EXTERNAL_ID indisponible")
         self.HOST = 'localhost'  # The server's hostname or IP address
         self.PORT = 65432        # The port used by the server
         # dict of all method for all possible event

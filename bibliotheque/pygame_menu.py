@@ -326,12 +326,14 @@ class Menu:
             button.Update()
         self.Draw(_window.screen)
         
-    def Draw(self,ecran):
+    def Draw(self,ecran:py.Surface):
         """
         fonction pour ajouter chaque bouton à l'écran
         """
+        surface = py.Surface((ecran.get_width(),ecran.get_height())).convert_alpha()
         for button in self.buttons:
-            button.draw(ecran)
+            button.draw(surface)
+        ecran.blit(surface,(0,0))
     
     def get_childs(self):
         """

@@ -31,12 +31,12 @@ class Client(socket.socket):
         """
         Initialise et lance le client socket
         """
-        super().__init__(socket.AF_INET, socket.SOCK_STREAM) # inititalization of the socket
+        self.ready = False
         print("connecting at",self.HOST,"on port",self.PORT,"...")
+        super().__init__(socket.AF_INET, socket.SOCK_STREAM) # inititalization of the socket
         self.connect((self.HOST, self.PORT)) # connection to the server
         self.thread = Thread(target=self.handle,daemon=True) # new thread for handling event
         self.thread.start()
-        self.ready = False
     
     def handle(self):
         """

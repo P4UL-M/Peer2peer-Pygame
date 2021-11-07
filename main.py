@@ -95,7 +95,10 @@ def pseudo_input():
     @_inputbox.on_enter
     def start_menu():
         Main_Server.client_name = _inputbox.text
-        Main_Server.run()
+        try:
+            Main_Server.run()
+        except ConnectionRefusedError:
+            print("Error connection refused")
         game.actual_menu = secondaire.get_child("Connecting")
 
     return _inputbox

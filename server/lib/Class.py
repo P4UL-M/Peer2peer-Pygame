@@ -3,6 +3,8 @@ from socket import socket,AF_INET,SOCK_STREAM
 from threading import Thread # because we need multi-threading everywhere
 from var.globals import HOST,PORT,VARIABLES
 
+_server = None
+
 class context:
     """
     class pour passer les infos du message rapidement
@@ -68,7 +70,7 @@ class Client(socket):
         except Exception as e:
             print(f"diconnected from {self.client_name} : {e}")
             if self.client_name != "":
-                del VARIABLES.SERVER.Clients_list[self.client_name]
+                del _server.Clients_list[self.client_name]
 
     def Event(func):
         """
@@ -84,6 +86,8 @@ class Server(socket):
     def __init__(self):
         super().__init__(AF_INET, SOCK_STREAM)
         self.Clients_list:dict[Client] = {}
+        global _server
+        _server = self
 
     def run(self):
         try:

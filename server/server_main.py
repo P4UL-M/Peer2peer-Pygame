@@ -1,7 +1,7 @@
 from lib.Class import *
 from var.globals import VARIABLES
 
-VARIABLES.SERVER = server = Server()
+server = Server()
 
 @Client.Event
 def connection(self:Client,ctx):

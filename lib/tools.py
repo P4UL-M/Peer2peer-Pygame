@@ -16,3 +16,10 @@ def attr_exist(name,obj):
         if name in attr[0]:
                 print("Function already exist in the class, take another name")
                 raise RuntimeError
+
+class ConnRejected(Exception):
+    """
+    Execption when server reject connection
+    """
+    def __init__(self, *args: object,**kargs):
+        super().__init__(*args,**kargs)

@@ -1,5 +1,5 @@
 import pygame as py
-from bibliotheque.basics_class import Vector2,attr_exist
+from lib.tools import Vector2,attr_exist
 from pygame.locals import *     # PYGAME constant & functions
 from sys import exit            # exit script 
 from time import time

@@ -1,5 +1,4 @@
 import socket # seriously a comment for that ?
-from requests import get # to get global ip, maybe not necessary after
 import json # well no need to explain
 from threading import Thread # because we need multi-threading everywhere
 from _thread import interrupt_main #to stop just this programme from a thread
@@ -18,15 +17,11 @@ class Client(socket.socket):
     """
     class discussion avec le server
     """
-    def __init__(self):
+    def __init__(self,Host=None, Port = None,pseudo=None):
         #constants
-        self.client_name = ""
-        try:
-            self.EXTERNAL_IP = get("https://api.ipify.org").text
-        except:
-            print("EXTERNAL_ID indisponible")
-        self.HOST = 'localhost'  # The server's hostname or IP address
-        self.PORT = 65432        # The port used by the server
+        self.client_name = pseudo
+        self.HOST = Host or 'localhost'  # The server's hostname or IP address
+        self.PORT = Port or 65432        # The port used by the server
         # dict of all method for all possible event
         self.handles:dict = {}
            
@@ -35,11 +30,12 @@ class Client(socket.socket):
         Initialise et lance le client socket
         """
         self.ready = False
-        print("connecting at",self.HOST,"on port",self.PORT,"...")
         super().__init__(socket.AF_INET, socket.SOCK_STREAM) # inititalization of the socket
         self.connect((self.HOST, self.PORT)) # connection to the server
         self.thread = Thread(target=self.handle,daemon=True) # new thread for handling event
         self.thread.start()
+        if self.client_name:
+            self.send_message(event="connection",args={"name":self.client_name})
     
     def handle(self):
         """

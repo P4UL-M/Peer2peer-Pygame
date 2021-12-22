@@ -1,12 +1,13 @@
 from sys import path
-from bibliotheque.pygame_menu import *
-from client_main import Main_Server
+from lib.pygame_menu import *
+from lib.tools import ConnRejected
+from var.globals import GAME_INFO
 import pygame
 from os import path
 
 directory = path.dirname(path.realpath(__file__))
 
-game = Window("MySuperGame",Vector2(1000,800),f"{directory}/assets/bg.png")
+GAME_INFO.GAME = game = Window("MySuperGame",Vector2(1000,800),f"{directory}/assets/bg.png")
 
 principale = Menu("principale",childs=["Play"])
 
@@ -76,8 +77,8 @@ def validate_button():
 
     @_button.on_click
     def get_pseudo():
-        Main_Server.client_name = secondaire.get_button("pseudoBox").text
-        Main_Server.run()
+        GAME_INFO.Main_Server.client_name = secondaire.get_button("pseudoBox").text
+        GAME_INFO.Main_Server.run()
         game.actual_menu = secondaire.get_child("Connecting")
 
     return _button
@@ -94,9 +95,9 @@ def pseudo_input():
 
     @_inputbox.on_enter
     def start_menu():
-        Main_Server.client_name = _inputbox.text
+        GAME_INFO.Main_Server.client_name = _inputbox.text
         try:
-            Main_Server.run()
+            GAME_INFO.Main_Server.run()
         except ConnectionRefusedError:
             print("Error connection refused")
         game.actual_menu = secondaire.get_child("Connecting")
@@ -116,7 +117,7 @@ def connection():
 
     @_button.Event(None)
     def check_ready():
-        if Main_Server.ready:
+        if GAME_INFO.Main_Server.ready:
             game.actual_menu = connecting.get_child("Online_Menu")
 
     return _button
@@ -133,12 +134,12 @@ def bad_pseudo():
 
     return _button
 
-@Main_Server.Event
+@GAME_INFO.Main_Server.Event
 def bad_name(ctx):
     for button in connecting.buttons:
         if button.name == "bad_pseudo":
             button.isactive = True
-    raise Exception("The name you enter is incorrect")
+    raise ConnRejected("The name you enter is incorrect")
 
 @connecting.add_button
 def back_button():
@@ -152,7 +153,7 @@ def back_button():
 
     @_button.on_click
     def back():
-        Main_Server.close()
+        GAME_INFO.Main_Server.close()
         game.actual_menu = connecting.get_parent()
 
     return _button
@@ -170,7 +171,7 @@ def back_button():
 
     @_button.on_click
     def back():
-        Main_Server.close()
+        GAME_INFO.Main_Server.close()
         game.actual_menu = online_menu.get_parent()
 
     return _button

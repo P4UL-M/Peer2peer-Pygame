@@ -1,7 +1,7 @@
 import json
 from socket import socket
 from threading import Thread # because we need multi-threading everywhere
-from var.globals import *
+from var.globals import HOST,PORT,SERVER
 
 class context:
     """
@@ -85,8 +85,6 @@ class Server(socket):
     def __init__(self):
         super().__init__(socket.AF_INET, socket.SOCK_STREAM)
         self.Clients_list:dict[Client] = {}
-        global SERVER
-        SERVER = self
 
     def run(self):
         try:

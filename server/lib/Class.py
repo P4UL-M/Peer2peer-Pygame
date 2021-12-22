@@ -1,9 +1,6 @@
 import json
-import socket
-from time import time
-from types import coroutine # seriously a comment for that ?
+from socket import socket
 from threading import Thread # because we need multi-threading everywhere
-import asyncio # why do we alway need coroutine, that's a good question
 from var.globals import *
 
 class context:
@@ -15,7 +12,7 @@ class context:
         for name,elt in message.items():
             setattr(self,name,elt)
 
-class Client(socket.socket):
+class Client(socket):
     """
     class discussion avec le server
     """
@@ -25,8 +22,9 @@ class Client(socket.socket):
         # transfer the socket to the inherance
         super().__init__(fileno=sock.detach())
         self.client_name = ""
+        self.address = None
         # assignement of default variable
-        self.ready = False
+        self.ready_play = False
         # dict of all method for all possible event
         self.thread = Thread(target=self.run,daemon=True)
     
@@ -83,7 +81,7 @@ class Client(socket.socket):
         else:
             raise RuntimeError("the function you want to pass already exist")
 
-class Server(socket.socket):
+class Server(socket):
     def __init__(self):
         super().__init__(socket.AF_INET, socket.SOCK_STREAM)
         self.Clients_list:dict[Client] = {}

@@ -12,3 +12,8 @@ def get_name(ctx):
 @Main_Server.Event
 def ready(ctx):
     Main_Server.ready = True
+
+
+@Main_Server.Event
+def fallback_response(ctx):
+    pass

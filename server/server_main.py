@@ -11,4 +11,12 @@ def set_name(self:Client,ctx):
         server.Clients_list[ctx.name] = self
         self.send_message("ready")
 
+@Client.Event
+def set_adr(self:Client,ctx):
+    if ctx.fallback == False:
+        self.address = ctx.address
+        self.ready_play = True
+    else:
+        pass
+
 server.run()

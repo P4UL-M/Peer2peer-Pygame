@@ -2,6 +2,7 @@ import socket # seriously a comment for that ?
 import json # well no need to explain
 from threading import Thread # because we need multi-threading everywhere
 from _thread import interrupt_main #to stop just this programme from a thread
+from lib.tools import ConnRejected
 
 class context:
     """
@@ -53,6 +54,8 @@ class Client(socket.socket):
                     self.handles[ctx.event](ctx)
                 else:
                     print("Event not found :",ctx.event)
+        except ConnRejected:
+            print(f"connection to {self.HOST} was rejected")
         except Exception as e:
             print(f"disconnected from {self.HOST}, {e}")
 

@@ -13,8 +13,3 @@ def conn_accepted(ctx):
 @Main_Server.Event
 def fallback_response(ctx):
     pass
-
-GAME_INFO.Main_Server.run()
-
-while True:
-    pass

@@ -3,6 +3,7 @@ from lib.pygame_menu import *
 from lib.tools import ConnRejected
 from var.globals import GAME_INFO
 import pygame
+import client_main
 from os import path
 
 directory = path.dirname(path.realpath(__file__))

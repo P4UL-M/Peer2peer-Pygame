@@ -279,6 +279,9 @@ class InputBox:
 
     def Enter_func(self,_event): ...
 
+class AlertBox:
+    pass
+
 class Menu:
     """
     classe principale du Menu

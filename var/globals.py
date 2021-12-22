@@ -1,12 +1,5 @@
-from lib.pygame_menu import Window
-
-class Game_Info:
-    def __init__(self):
-        self.isplaying = False
-        self.GAME:Window = None
-        self.Main_Server = None
-        self.Client = None
-        self.party_conn = None
+from pathlib import Path
+import sys
 
 
-GAME_INFO = Game_Info()
+PATH = Path("/".join(sys.argv[0].split("/")[:-1]) or "\\".join(sys.argv[0].split("\\")[:-1])).absolute()

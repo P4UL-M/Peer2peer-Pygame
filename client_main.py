@@ -1,15 +1,14 @@
-from os import name
 from lib.Player_Sockets import Client
-from var.globals import GAME_INFO
 
-GAME_INFO.Main_Server = Main_Server = Client(pseudo="Poool")
+server = Client()
 
-@Main_Server.Event
+
+@server.Event
 def conn_accepted(ctx):
-    Main_Server.ready = True
+    server.ready = True
     print("connected and ready !")
 
 
-@Main_Server.Event
+@server.Event
 def fallback_response(ctx):
     pass

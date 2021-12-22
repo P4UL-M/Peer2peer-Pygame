@@ -18,9 +18,9 @@ class Client(socket.socket):
     """
     class discussion avec le server
     """
-    def __init__(self,Host=None, Port = None,pseudo=None):
+    def __init__(self,Host=None, Port = None):
         #constants
-        self.client_name = pseudo
+        self.client_name = None
         self.HOST = Host or 'localhost'  # The server's hostname or IP address
         self.PORT = Port or 65432        # The port used by the server
         # dict of all method for all possible event

@@ -1,14 +1,14 @@
 from sys import path
 from lib.pygame_menu import *
+from var.globals import PATH
+from client_main import server
 from lib.tools import ConnRejected
-from var.globals import GAME_INFO
 import pygame
-import client_main
 from os import path
 
 directory = path.dirname(path.realpath(__file__))
 
-GAME_INFO.GAME = game = Window("MySuperGame",Vector2(1000,800),f"{directory}/assets/bg.png")
+game = Window("MySuperGame",Vector2(1000,800),PATH / "assets" / "bg.png")
 
 principale = Menu("principale",childs=["Play"])
 
@@ -16,7 +16,7 @@ principale = Menu("principale",childs=["Play"])
 def exit_button():
     _button = Button(
         name="exit",
-        path=f"{directory}/assets/Exit_Button.png"
+        path= PATH / "assets" / "Exit_Button.png"
         )
 
     _button.set_position(Vector2(0.5,0.66))
@@ -36,7 +36,7 @@ def exit_button():
 def play_button():
     _button = Button(
         name="Play",
-        path=f"{directory}/assets/Play.png"
+        path=PATH / "assets" / "Play.png"
         )
 
     _button.set_position(Vector2(0.5,0.33))
@@ -48,13 +48,14 @@ def play_button():
 
     return _button
 
-secondaire = Menu("Play",parent="principale",childs="Connecting",background=f"{directory}/assets/bg_control.png")
+#region connection portal
+secondaire = Menu("Play",parent="principale",childs="Connecting",background= PATH / "assets" / "bg_control.png")
 
 @secondaire.add_button
 def back_button():
     _button = Button(
         name="back",
-        path=f"{directory}/assets/Back_Button.png"
+        path=PATH / "assets" / "Back_Button.png"
     )
         
     _button.set_scale(Vector2(0.46,0.5))
@@ -66,11 +67,18 @@ def back_button():
 
     return _button
 
+def connection_server(name):
+    server.client_name = name
+    try:
+        server.run()
+    except ConnectionRefusedError:
+        connecting.get_button("bad_pseudo").isactive = True
+
 @secondaire.add_button
 def validate_button():
     _button = Button(
         name="validate",
-        path=f"{directory}/assets/Load.png"
+        path=PATH / "assets" / "Load.png"
     )
         
     _button.set_scale(Vector2(0.46,0.5))
@@ -78,8 +86,7 @@ def validate_button():
 
     @_button.on_click
     def get_pseudo():
-        GAME_INFO.Main_Server.client_name = secondaire.get_button("pseudoBox").text
-        GAME_INFO.Main_Server.run()
+        connection_server(secondaire.get_button("pseudoBox").text)
         game.actual_menu = secondaire.get_child("Connecting")
 
     return _button
@@ -88,7 +95,7 @@ def validate_button():
 def pseudo_input():
     _inputbox = InputBox(
         name="pseudoBox",
-        path = f"{directory}/assets/Empty_Node.png",
+        path = PATH / "assets" / "Empty_Node.png",
         paceHolder="Enter a pseudo...",
     )
 
@@ -96,29 +103,27 @@ def pseudo_input():
 
     @_inputbox.on_enter
     def start_menu():
-        GAME_INFO.Main_Server.client_name = _inputbox.text
-        try:
-            GAME_INFO.Main_Server.run()
-        except ConnectionRefusedError:
-            print("Error connection refused")
+        connection_server(_inputbox.text)
         game.actual_menu = secondaire.get_child("Connecting")
 
     return _inputbox
+#endregion
 
-connecting = Menu("Connecting",parent="Play",childs="Online_Menu",background=f"{directory}/assets/bg_control.png")
+#region connection wait screen
+connecting = Menu("Connecting",parent="Play",childs="Online_Menu",background= PATH / "assets" / "bg_control.png")
 
 @connecting.add_button
 def connection():
     _button = Button(
         name="connecting",
-        path=f"{directory}/assets/connecting.png"
+        path=PATH / "assets" / "connecting.png"
     )
         
     _button.set_position(Vector2(0.5,0.4))
 
     @_button.Event(None)
     def check_ready():
-        if GAME_INFO.Main_Server.ready:
+        if server.ready:
             game.actual_menu = connecting.get_child("Online_Menu")
 
     return _button
@@ -127,7 +132,7 @@ def connection():
 def bad_pseudo():
     _button = Button(
         name="bad_pseudo",
-        path=f"{directory}/assets/Bad_Pseudo.png",
+        path=PATH / "assets" / "Bad_Pseudo.png",
         isactive=False
     )
         
@@ -135,7 +140,7 @@ def bad_pseudo():
 
     return _button
 
-@GAME_INFO.Main_Server.Event
+@server.Event
 def bad_name(ctx):
     for button in connecting.buttons:
         if button.name == "bad_pseudo":
@@ -154,28 +159,31 @@ def back_button():
 
     @_button.on_click
     def back():
-        GAME_INFO.Main_Server.close()
+        server.close()
         game.actual_menu = connecting.get_parent()
 
     return _button
+#endregion
 
-online_menu = Menu("Online_Menu",parent="Play",background=f"{directory}/assets/bg_control.png")
+#region online menu
+online_menu = Menu("Online_Menu",parent="Play",background= PATH / "assets" / "bg_control.png")
 
 @online_menu.add_button
 def back_button():
     _button = Button(
         name="back",
-        path=f"{directory}/assets/Back_Button.png"
+        path=PATH / "assets" / "Back_Button.png"
     )
         
     _button.set_position(Vector2(0.5,0.66))
 
     @_button.on_click
     def back():
-        GAME_INFO.Main_Server.close()
+        server.close()
         game.actual_menu = online_menu.get_parent()
 
     return _button
+#endregion
 
 game.actual_menu = principale
 

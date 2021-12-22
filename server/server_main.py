@@ -1,5 +1,4 @@
 from lib.Class import *
-from var.globals import VARIABLES
 
 server = Server()
 

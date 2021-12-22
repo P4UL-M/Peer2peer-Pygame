@@ -1,7 +1,7 @@
 import json
 from socket import socket,AF_INET,SOCK_STREAM
 from threading import Thread # because we need multi-threading everywhere
-from var.globals import HOST,PORT,VARIABLES
+from var.globals import HOST,PORT
 
 _server = None
 

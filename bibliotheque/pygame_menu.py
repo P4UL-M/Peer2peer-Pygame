@@ -51,7 +51,6 @@ class Window():
         py.quit()   # ferme la fenêtre principale
         exit()      # termine tous les process en cours
 
-
 class Button:
     """
     classe de bouton simple avec méthode rapide pour Event et On_Click
@@ -153,7 +152,6 @@ class Button:
     def Update(*args,**kargs): ...
 
     def empty(*args,**kargs): ...
-
 
 class InputBox:
     """
@@ -280,7 +278,6 @@ class InputBox:
     def Update(self): ...
 
     def Enter_func(self,_event): ...
-
 
 class Menu:
     """

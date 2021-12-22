@@ -1,4 +1,4 @@
-from server_bibliotheque import *
+from lib.Class import *
 
 server = Server()
 

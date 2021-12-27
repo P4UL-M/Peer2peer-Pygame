@@ -3,6 +3,7 @@ from lib.tools import Vector2,attr_exist
 from pygame.locals import *     # PYGAME constant & functions
 from sys import exit            # exit script 
 from time import time
+import textwrap
 
 
 _window = None
@@ -280,7 +281,127 @@ class InputBox:
     def Enter_func(self,_event): ...
 
 class AlertBox:
-    pass
+    """
+    class de alertbox autonome, permet de rentrer d'afficher une erreur facilement
+    """
+    def __init__(self,name,path,color='black',text_color='grey',padding=0.05,isactive=True):
+        self.name = name
+        self.file = path
+        self.position:Vector2 = Vector2(0,0)
+        self.rect = None
+        self.isactive = isactive
+        
+        try:
+            self.surface:py.Surface = py.image.load(self.file).convert_alpha()
+        except FileNotFoundError:
+            print("Your file for alertBox doesn't seems to exist")
+
+        self.color = Color(color)
+        self.text = ''
+        self.text_color = Color(text_color)
+        self.padding = padding
+
+        self.text_size = 10
+
+        self.FONT = py.font.Font(None,self.text_size)
+        #self.txt_surface = self.FONT.render(self.paceHolder, True, self.text_color)
+
+    def get_text_size(self):
+        i = self.surface.get_height()
+        temp = py.font.Font(None,i)
+        max_text = self.text.split("\n")[0]
+        for line in self.text.split("\n")[1:]:
+            if temp.size(max_text)[0]<temp.size(line)[0]:
+                max_text = line
+        size_temp = temp.size(max_text)
+        while int(self.surface.get_height()*(1-self.padding*2))<size_temp[1] or int(self.surface.get_width()*(1-self.padding*2))<size_temp[0]:
+            i -=1
+            temp = py.font.Font(None,i)
+            size_temp = temp.size(max_text)
+        return(i)
+
+    def set_position(self,pos:Vector2,TopLeft=False):
+        """
+        attribue les valeur du vecteur à la position de l'image, si les valeur sont en float alors elle sont considérer comme un multiplicateur
+        """
+        x,y = None,None
+        if TopLeft:
+            if type(pos.x)==float:
+                x = int(_window.screen.get_width()*pos.x)
+            if type(pos.y)==float:
+                y = int(_window.screen.get_height()*pos.y)
+        else:
+            x = pos.x - self.surface.get_width()/2
+            y = pos.y - self.surface.get_height()/2
+            if type(pos.x)==float:
+                x = int(_window.screen.get_width()*pos.x - self.surface.get_width()/2)
+            if type(pos.y)==float:
+                y = int(_window.screen.get_height()*pos.y - self.surface.get_height()/2)
+        self.position:Vector2 = Vector2(x or pos.x,y or pos.y)
+        self.set_rect(Vector2(x or pos.x,y or pos.y))
+
+    def set_scale(self,sca:Vector2):
+        """
+        attribue les valeur du vecteur à la taille de l'image, si les valeur sont en float alors elle sont considérer comme un multiplicateur
+        """
+        x,y = None,None
+        if type(sca.x)==float:
+            x = int(self.surface.get_width()*sca.x)
+        if type(sca.y)==float:
+            y = int(self.surface.get_height()*sca.y)
+        self.surface = py.transform.scale(self.surface,(x or sca.x,y or sca.y))
+
+    def set_rect(self,coord:Vector2):
+        self.rect = self.surface.get_rect(topleft=(coord.x,coord.y))
+
+    def on_enter(self,func):
+        """
+        Ce décorateur crée une fonction qui ajoute celle ci à la liste des fonctions.
+        La fonction passé en décoration n'est executé que si la touche Enter est pressé.
+        """
+        def wrap(_event,*args, **kwargs):
+            if _event.type==KEYDOWN:
+                if self.isactive and _event.key == K_RETURN:
+                    return func(*args,**kwargs)
+        setattr(self,"Enter_func",wrap)
+        return True
+
+    def Handle(self, event:py.event.Event):
+        self.Enter_func(event)
+
+    def set_text(self,text,wrap_lenght=None,align_center=False):
+        self.text = text
+
+        if wrap_lenght:
+            text = ""
+            for line in self.text.split("\n"):
+                text += "\n" if text else ""
+                text += textwrap.fill(line,wrap_lenght)
+            self.text = text
+        self.text_size = self.get_text_size()
+        self.FONT = py.font.Font(None,self.text_size)
+
+        self.surface:py.Surface = py.image.load(self.file).convert_alpha()
+
+        # calcul positions
+        x = int(self.surface.get_width()*self.padding)
+        y = int(self.surface.get_height()*self.padding)
+        # Blit the text.
+        for line in self.text.split("\n"):
+            txt_surface = self.FONT.render(line, True, self.text_color)
+            if align_center:
+                x = self.surface.get_width()//2 - txt_surface.get_width()//2
+            self.surface.blit(txt_surface,(x,y))
+            y += txt_surface.get_height()
+
+    def draw(self,ecran:py.Surface):
+        """method draw"""
+        if self.isactive:
+            ecran.blit(self.surface,(self.position.x,self.position.y))
+
+    def Update(self): ...
+
+    def Enter_func(self,_event): ...
 
 class Menu:
     """
@@ -308,7 +429,7 @@ class Menu:
         decorateur qui ajoute automatiquement le retour de la fonction à la liste
         """
         _button = func()
-        if type(_button)==Button or type(_button)==InputBox:
+        if type(_button)==Button or type(_button)==InputBox or type(_button)==AlertBox:
             self.buttons.append(_button)
         else:
             raise TypeError("You must return a button to add, type returned was :",type(_button))

@@ -48,6 +48,25 @@ def play_button():
 
     return _button
 
+@principale.add_button
+def play_alert():
+    _alert = AlertBox(
+        name="Alert",
+        path=PATH / "assets" / "Empty_Node.png"
+        )
+
+    _alert.set_text("Joueur et Joueuse :\nJ'ai l'honneur de vous annoncer l'arrivé de ce nouveaux jeu incroyable merci pour votre soutien.",wrap_lenght=50,align_center=True)
+
+    _alert.set_scale(Vector2(1.5,2.0))
+    _alert.set_position(Vector2(0.5,0.33))
+
+    
+    @_alert.on_enter
+    def close():
+        _alert.isactive = False
+
+    return _alert
+
 #region connection portal
 secondaire = Menu("Play",parent="principale",childs="Connecting",background= PATH / "assets" / "bg_control.png")
 

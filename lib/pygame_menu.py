@@ -259,7 +259,13 @@ class AlertBox(sprite):
         self.text_size = 10
 
         self.FONT = py.font.Font(None,self.text_size)
-        #self.txt_surface = self.FONT.render(self.paceHolder, True, self.text_color)
+
+        self.childs:list[Button] = list()
+
+    def set_rect(self, coord: Vector2):
+        super().set_rect(coord)
+        for _button in self.childs:
+            self.rect = self.rect.union(_button.rect)
 
     def get_text_size(self):
         i = self.surface.get_height()
@@ -287,8 +293,13 @@ class AlertBox(sprite):
         setattr(self,"Enter_func",wrap)
         return True
 
-    def Handle(self, event:py.event.Event):
-        self.Enter_func(event)
+    def add_button(self,func):
+        _button = func()
+        if type(_button) == Button:
+            self.childs.append(_button)
+            self.set_rect(self.position)
+        else:
+            print("alert box can only have button child")
 
     def set_text(self,text,wrap_lenght=None,align_center=False):
         self.text = text
@@ -314,6 +325,23 @@ class AlertBox(sprite):
                 x = self.surface.get_width()//2 - txt_surface.get_width()//2
             self.surface.blit(txt_surface,(x,y))
             y += txt_surface.get_height()
+
+    def Event(self, event):
+        print("can't use this on an alertbox")
+
+    def Handle(self, event:py.event.Event):
+        self.Enter_func(event)
+        for _button in self.childs:
+            _button.Handle(event)
+
+    def draw(self, ecran):
+        super().draw(ecran)
+        for _button in self.childs:
+            _button.draw(ecran)
+
+    def Update(self,*args, **kargs):
+        for _button in self.childs:
+            _button.Update(*args,**kargs)
 
     def Enter_func(self,_event): ...
 

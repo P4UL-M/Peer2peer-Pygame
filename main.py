@@ -3,18 +3,14 @@ from lib.pygame_menu import *
 from var.globals import PATH
 from client_main import server
 from lib.tools import ConnRejected
-import pygame
-from os import path
-
-directory = path.dirname(path.realpath(__file__))
 
 game = Window("MySuperGame",Vector2(1000,800),PATH / "assets" / "bg.png")
 
 principale = Menu("principale",childs=["Play"])
 
-pygame.font.init()
-font = pygame.font.SysFont("Sans", 22)
+game.actual_menu = principale
 
+#region main_menu
 @principale.add_sprite
 def exit_button():
     _button = Button(
@@ -58,12 +54,35 @@ def play_alert():
     _alert.set_scale(Vector2(1.5,2.0))
     _alert.set_position(Vector2(0.5,0.33))
 
-    
+    @_alert.add_button
+    def validate_button():
+        _button = Button(
+            name=f"validate_alert_{_alert.name}",
+            path=PATH / "assets" / "Continue.png",
+            layer=_alert.layer
+        )
+        pos = Vector2(
+            _alert.position.x + _button.surface.get_width()//4,
+            _alert.position.y + int(_button.surface.get_height()*1.5))
+
+        _button.set_position(pos,TopLeft=True)
+
+        @_button.on_click
+        def close():
+            _alert.isactive = False
+            for _button in _alert.childs:
+                _button.isactive = False
+        
+        return _button
+
     @_alert.on_enter
     def close():
         _alert.isactive = False
+        for _button in _alert.childs:
+            _button.isactive = False
 
     return _alert
+#endregion
 
 #region connection portal
 secondaire = Menu("Play",parent="principale",childs="Connecting",background= PATH / "assets" / "bg_control.png")
@@ -168,7 +187,7 @@ def bad_name(ctx):
 def back_button():
     _button = Button(
         name="back",
-        path=f"{directory}/assets/Back_Button.png"
+        path=PATH / "assets" / "Back_Button.png"
     )
         
     _button.set_scale(Vector2(0.5,0.5))
@@ -201,8 +220,6 @@ def back_button():
 
     return _button
 #endregion
-
-game.actual_menu = principale
 
 if __name__ == '__main__':
     try:

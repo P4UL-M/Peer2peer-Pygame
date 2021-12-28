@@ -15,7 +15,7 @@ principale = Menu("principale",childs=["Play"])
 pygame.font.init()
 font = pygame.font.SysFont("Sans", 22)
 
-@principale.add_button
+@principale.add_sprite
 def exit_button():
     _button = Button(
         name="exit",
@@ -30,7 +30,7 @@ def exit_button():
 
     return _button
 
-@principale.add_button
+@principale.add_sprite
 def play_button():
     _button = Button(
         name="Play",
@@ -45,7 +45,7 @@ def play_button():
 
     return _button
 
-@principale.add_button
+@principale.add_sprite
 def play_alert():
     _alert = AlertBox(
         name="Alert",
@@ -67,7 +67,7 @@ def play_alert():
 #region connection portal
 secondaire = Menu("Play",parent="principale",childs="Connecting",background= PATH / "assets" / "bg_control.png")
 
-@secondaire.add_button
+@secondaire.add_sprite
 def back_button():
     _button = Button(
         name="back",
@@ -90,7 +90,7 @@ def connection_server(name):
     except ConnectionRefusedError:
         connecting.get_button("bad_pseudo").isactive = True
 
-@secondaire.add_button
+@secondaire.add_sprite
 def validate_button():
     _button = Button(
         name="validate",
@@ -107,7 +107,7 @@ def validate_button():
 
     return _button
 
-@secondaire.add_button
+@secondaire.add_sprite
 def pseudo_input():
     _inputbox = InputBox(
         name="pseudoBox",
@@ -128,7 +128,7 @@ def pseudo_input():
 #region connection wait screen
 connecting = Menu("Connecting",parent="Play",childs="Online_Menu",background= PATH / "assets" / "bg_control.png")
 
-@connecting.add_button
+@connecting.add_sprite
 def connection():
     _button = Button(
         name="connecting",
@@ -144,7 +144,7 @@ def connection():
 
     return _button
 
-@connecting.add_button
+@connecting.add_sprite
 def bad_pseudo():
     _button = Button(
         name="bad_pseudo",
@@ -163,7 +163,7 @@ def bad_name(ctx):
             button.isactive = True
     raise ConnRejected("The name you enter is incorrect")
 
-@connecting.add_button
+@connecting.add_sprite
 def back_button():
     _button = Button(
         name="back",
@@ -184,7 +184,7 @@ def back_button():
 #region online menu
 online_menu = Menu("Online_Menu",parent="Play",background= PATH / "assets" / "bg_control.png")
 
-@online_menu.add_button
+@online_menu.add_sprite
 def back_button():
     _button = Button(
         name="back",

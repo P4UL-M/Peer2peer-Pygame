@@ -328,7 +328,7 @@ class Menu:
         else:
             self.background = None
 
-    def add_button(self,func):
+    def add_sprite(self,func):
         """
         decorateur qui ajoute automatiquement le retour de la fonction à la liste
         """

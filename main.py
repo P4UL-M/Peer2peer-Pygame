@@ -49,7 +49,8 @@ def play_button():
 def play_alert():
     _alert = AlertBox(
         name="Alert",
-        path=PATH / "assets" / "Empty_Node.png"
+        path=PATH / "assets" / "Empty_Node.png",
+        layer=1
         )
 
     _alert.set_text("Joueur et Joueuse :\nJ'ai l'honneur de vous annoncer l'arrivé de ce nouveaux jeu incroyable merci pour votre soutien.",wrap_lenght=50,align_center=True)

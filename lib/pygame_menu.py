@@ -1,6 +1,5 @@
 import pygame as py
-from pygame.time import delay
-from lib.tools import Vector2,attr_exist
+from lib.tools import Vector2
 from pygame.locals import *     # PYGAME constant & functions
 from sys import exit            # exit script 
 from time import time
@@ -53,11 +52,12 @@ class Window():
         exit()      # termine tous les process en cours
 
 class sprite:
-    def __init__(self,name,path,isactive):
+    def __init__(self,name,path,isactive,layer):
         self.name = name
         self.file = path
         self.position = Vector2(0,0)
         self.rect = None
+        self.layer = layer
         self.isactive = isactive
         
         self.handles = []
@@ -140,9 +140,8 @@ class Button(sprite):
     """
     classe de bouton simple avec méthode rapide pour Event et On_Click
     """
-    def __init__(self,name,path,isactive=True):
-        pass
-        super().__init__(name,path,isactive)
+    def __init__(self,name,path,isactive=True,layer=0):
+        super().__init__(name,path,isactive,layer)
 
     def on_click(self,func):
         """
@@ -152,15 +151,24 @@ class Button(sprite):
         def wrap(_event:py.event.Event,*args,**kargs):   
             if _event.type == py.MOUSEBUTTONUP:
                 if self.rect.collidepoint(py.mouse.get_pos()):
-                    return func(*args,**kargs)
+                    if self.check_layer():
+                        return func(*args,**kargs)
         self.handles.append(wrap)
+    
+    def check_layer(self):
+        for _button in _window.actual_menu.buttons:
+            if _button.rect.collidepoint(py.mouse.get_pos()) and _button.layer > self.layer:
+                return False
+        else:
+            return True
 
 class InputBox(sprite):
     """
     class de InputBox autonome, permet de rentrer du texte facilement
     """
-    def __init__(self,name,path,paceHolder='Enter text...',color='black',text_color='grey',alter_text_color="white",max_char=16,isactive=True):
-        super().__init__(name,path,isactive)
+    def __init__(self,name,path,paceHolder='Enter text...',color='black',text_color='grey',alter_text_color="white",max_char=16,isactive=True,layer=0):
+
+        super().__init__(name,path,isactive,layer)
 
         self.color = Color(color)
         self.text = ''
@@ -238,8 +246,9 @@ class AlertBox(sprite):
     """
     class de alertbox autonome, permet de rentrer d'afficher une erreur facilement
     """
-    def __init__(self,name,path,color='black',text_color='grey',padding=0.05,isactive=True):
-        super().__init__(name,path,isactive)
+    def __init__(self,name,path,color='black',text_color='grey',padding=0.05,isactive=True,layer=0):
+        
+        super().__init__(name,path,isactive,layer)
 
         self.color = Color(color)
         self.text = ''

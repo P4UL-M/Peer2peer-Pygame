@@ -12,6 +12,9 @@ game = Window("MySuperGame",Vector2(1000,800),PATH / "assets" / "bg.png")
 
 principale = Menu("principale",childs=["Play"])
 
+pygame.font.init()
+font = pygame.font.SysFont("Sans", 22)
+
 @principale.add_button
 def exit_button():
     _button = Button(
@@ -20,12 +23,7 @@ def exit_button():
         )
 
     _button.set_position(Vector2(0.5,0.66))
-    #_button.set_scale(Vector2(10,2.0))
 
-    @_button.Event(pygame.TEXTINPUT)
-    def debug_some_shit(event):
-        print(f"Vous avez pressé la touche : {event.text}, ce message vous a été envoyé depuis {_button.name} du menu {principale.name}")
-    
     @_button.on_click
     def next_menu():
         game.destroy()
@@ -40,7 +38,6 @@ def play_button():
         )
 
     _button.set_position(Vector2(0.5,0.33))
-    #_button.set_scale(Vector2(10,2.0))
     
     @_button.on_click
     def next_menu():

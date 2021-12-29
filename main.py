@@ -49,10 +49,15 @@ def play_alert():
         layer=1
         )
 
-    _alert.set_text("Joueur et Joueuse :\nJ'ai l'honneur de vous annoncer l'arrivé de ce nouveaux jeu incroyable merci pour votre soutien.",wrap_lenght=50,align_center=True)
+    _alert.set_text(
+        """Hello Word !
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sollicitudin quam enim, at iaculis mauris congue nec. Curabitur sed massa id ante consectetur congue. Nam et est non sem pharetra varius quis vitae risus. Cras lectus enim, sodales ac neque a, pulvinar elementum ante. Nam pellentesque tincidunt ligula, a sagittis felis semper sit amet. Sed sagittis euismod tempor. Nulla facilisi.
+        """,
+        wrap_lenght=50,
+        align_center=True)
 
-    _alert.set_scale(Vector2(1.5,2.0))
     _alert.set_position(Vector2(0.5,0.33))
+    _alert.set_scale(Vector2(1.5,2.0))
 
     @_alert.add_button
     def validate_button():
@@ -62,8 +67,8 @@ def play_alert():
             layer=_alert.layer
         )
         
-        _button.set_scale(Vector2(0.5,0.5))
         _button.set_position(Vector2(0.5,1.0),parent=_alert)
+        _button.set_scale(Vector2(0.5,0.5))
 
         @_button.on_click
         def close():
@@ -164,15 +169,19 @@ def connection():
 
 @connecting.add_sprite
 def bad_pseudo():
-    _button = Button(
+    _alert = AlertBox(
         name="bad_pseudo",
-        path=PATH / "assets" / "Bad_Pseudo.png",
+        path=PATH / "assets" / "Empty_Node.png",
         isactive=False
     )
         
-    _button.set_position(Vector2(0.5,0.4))
+    _alert.set_position(Vector2(0.5,0.4))
 
-    return _button
+    _alert.set_text("""BAD PSEUDO
+    Le pseudo que vous avez choisi ne convient pas, veuillez en essayer un autre
+    """,wrap_lenght=30,align_center=True)
+
+    return _alert
 
 @server.Event
 def bad_name(ctx):

@@ -65,13 +65,15 @@ class sprite:
             self.surface:py.Surface = py.image.load(self.file).convert_alpha()
         except FileNotFoundError:
             print("Your image doesn't seems to exist")
+
+        self.scale = Vector2(self.surface.get_width(),self.surface.get_height())
     
     def set_position(self,pos:Vector2,TopLeft=False,parent=None):
         """
         attribue les valeur du vecteur à la position de l'image, si les valeur sont en float alors elle sont considérer comme un multiplicateur
         """
-        x,y = None,None
         if TopLeft:
+            x,y = pos.x,pos.y
             if type(pos.x)==float:
                 if parent:
                     x = int(parent.surface.get_width()*pos.x) + parent.position.x
@@ -95,21 +97,28 @@ class sprite:
                     y = int(parent.surface.get_height()*pos.y - self.surface.get_height()/2) + parent.position.y
                 else:
                     y = int(_window.screen.get_height()*pos.y - self.surface.get_height()/2)
-        self.position:Vector2 = Vector2(x or pos.x,y or pos.y)
-        self.set_rect(Vector2(x or pos.x,y or pos.y))
+        self.position:Vector2 = Vector2(x,y)
+        self.set_rect(Vector2(x,y))
     
     def set_scale(self,sca:Vector2):
         """
         attribue les valeur du vecteur à la taille de l'image, si les valeur sont en float alors elle sont considérer comme un multiplicateur
         """
-        # bug de position lors du rescale prise en compte necessaire du monde de placement choisit c'est la merde xd
-        x,y = None,None
+        x,y = sca.x,sca.y
         if type(sca.x)==float:
             x = int(self.surface.get_width()*sca.x)
         if type(sca.y)==float:
             y = int(self.surface.get_height()*sca.y)
-        self.surface = py.transform.scale(self.surface,(x or sca.x,y or sca.y))
-        #self.set_position(Vector2(self.position.x,self.position.y),TopLeft=True)
+        self.scale = Vector2(x,y)
+        self.actualize_scale()
+
+    def actualize_scale(self):
+        offset = Vector2(
+            x= int(self.position.x - (self.scale.x - self.surface.get_width())/2),
+            y= int(self.position.y - (self.scale.y - self.surface.get_height())/2)
+        )
+        self.set_position(offset,TopLeft=True)
+        self.surface = py.transform.scale(self.surface,(self.scale.x,self.scale.y))
 
     def set_rect(self,coord:Vector2):
         self.rect = self.surface.get_rect(topleft=(coord.x,coord.y))
@@ -273,6 +282,36 @@ class AlertBox(sprite):
         self.FONT = py.font.Font(None,self.text_size)
 
         self.childs:list[Button] = list()
+  
+    def set_scale(self,sca:Vector2):
+        """
+        attribue les valeur du vecteur à la taille de l'image, si les valeur sont en float alors elle sont considérer comme un multiplicateur
+        """
+        x,y = sca.x,sca.y
+        if type(sca.x)==float:
+            x = int(self.surface.get_width()*sca.x)
+        if type(sca.y)==float:
+            y = int(self.surface.get_height()*sca.y)
+        self.scale = Vector2(x,y)
+
+        self.actualize_child_position()
+        self.actualize_scale()
+
+    def actualize_child_position(self):
+        #calcul pourcentage d'augmentation
+        offset = Vector2(
+            x= self.scale.x / self.surface.get_width(),
+            y= self.scale.y / self.surface.get_height()
+        )
+        for _button in self.childs:
+            #calcul position pourcentage du centre du parent
+            pos = Vector2(
+                ((_button.position.x + _button.scale.x/2) - self.position.x - self.surface.get_width()/2)/self.surface.get_width(),
+                ((_button.position.y + _button.scale.y/2) - self.position.y - self.surface.get_height()/2)/self.surface.get_height()
+            )
+            #calcul nouvelle position par rapport au coin haut gauche du parent
+            pos.x = pos.x*offset.x + 0.5; pos.y = pos.y*offset.y+0.5
+            _button.set_position(pos,parent=self)
 
     def set_rect(self, coord: Vector2):
         super().set_rect(coord)
@@ -287,7 +326,7 @@ class AlertBox(sprite):
             if temp.size(max_text)[0]<temp.size(line)[0]:
                 max_text = line
         size_temp = temp.size(max_text)
-        while int(self.surface.get_height()*(1-self.padding*2))<size_temp[1] or int(self.surface.get_width()*(1-self.padding*2))<size_temp[0]:
+        while int(self.surface.get_height()*(1-self.padding*2))<size_temp[1]*len(self.text.split("\n")) or int(self.surface.get_width()*(1-self.padding*2))<size_temp[0]:
             i -=1
             temp = py.font.Font(None,i)
             size_temp = temp.size(max_text)

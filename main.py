@@ -61,11 +61,9 @@ def play_alert():
             path=PATH / "assets" / "Continue.png",
             layer=_alert.layer
         )
-        pos = Vector2(
-            _alert.position.x + _button.surface.get_width()//4,
-            _alert.position.y + int(_button.surface.get_height()*1.5))
-
-        _button.set_position(pos,TopLeft=True)
+        
+        _button.set_scale(Vector2(0.5,0.5))
+        _button.set_position(Vector2(0.5,1.0),parent=_alert)
 
         @_button.on_click
         def close():

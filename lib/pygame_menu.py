@@ -66,23 +66,35 @@ class sprite:
         except FileNotFoundError:
             print("Your image doesn't seems to exist")
     
-    def set_position(self,pos:Vector2,TopLeft=False):
+    def set_position(self,pos:Vector2,TopLeft=False,parent=None):
         """
         attribue les valeur du vecteur à la position de l'image, si les valeur sont en float alors elle sont considérer comme un multiplicateur
         """
         x,y = None,None
         if TopLeft:
             if type(pos.x)==float:
-                x = int(_window.screen.get_width()*pos.x)
+                if parent:
+                    x = int(parent.surface.get_width()*pos.x) + parent.position.x
+                else:
+                    x = int(_window.screen.get_width()*pos.x)
             if type(pos.y)==float:
-                y = int(_window.screen.get_height()*pos.y)
+                if parent:
+                    y = int(parent.surface.get_height()*pos.y) + parent.position.y
+                else:
+                    y = int(_window.screen.get_height()*pos.y)
         else:
-            x = pos.x - self.surface.get_width()/2
-            y = pos.y - self.surface.get_height()/2
+            x = int(pos.x - self.surface.get_width()/2)
+            y = int(pos.y - self.surface.get_height()/2)
             if type(pos.x)==float:
-                x = int(_window.screen.get_width()*pos.x - self.surface.get_width()/2)
+                if parent:
+                    x = int(parent.surface.get_width()*pos.x - self.surface.get_width()/2) + parent.position.x
+                else:
+                    x = int(_window.screen.get_width()*pos.x - self.surface.get_width()/2)
             if type(pos.y)==float:
-                y = int(_window.screen.get_height()*pos.y - self.surface.get_height()/2)
+                if parent:
+                    y = int(parent.surface.get_height()*pos.y - self.surface.get_height()/2) + parent.position.y
+                else:
+                    y = int(_window.screen.get_height()*pos.y - self.surface.get_height()/2)
         self.position:Vector2 = Vector2(x or pos.x,y or pos.y)
         self.set_rect(Vector2(x or pos.x,y or pos.y))
     
@@ -295,6 +307,7 @@ class AlertBox(sprite):
 
     def add_button(self,func):
         _button = func()
+
         if type(_button) == Button:
             self.childs.append(_button)
             self.set_rect(self.position)

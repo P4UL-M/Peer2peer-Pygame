@@ -1,10 +1,9 @@
-from os import name
 import pygame as py
 from pygame.font import Font
 from pygame.surface import Surface
 from lib.tools import Vector2
 from pygame.locals import *     # PYGAME constant & functions
-from sys import exit, flags            # exit script 
+from sys import exit           # exit script
 from time import time
 import textwrap
 

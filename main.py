@@ -1,4 +1,3 @@
-from sys import path
 from lib.pygame_menu import *
 from var.globals import PATH
 from client_main import server
@@ -30,10 +29,12 @@ def exit_button():
 def play_button():
     _button = Button(
         name="Play",
-        path=PATH / "assets" / "Play.png"
+        path=PATH / "assets" / "Empty_Node.png"
         )
 
     _button.set_position(Vector2(0.5,0.33))
+
+    _button.set_text("Play",color="grey",padding=0.15)
     
     @_button.on_click
     def next_menu():

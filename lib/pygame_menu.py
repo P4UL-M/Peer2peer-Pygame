@@ -1,9 +1,14 @@
+from os import name
 import pygame as py
+from pygame.font import Font
+from pygame.surface import Surface
 from lib.tools import Vector2
 from pygame.locals import *     # PYGAME constant & functions
-from sys import exit            # exit script 
+from sys import exit, flags            # exit script 
 from time import time
 import textwrap
+
+from var.globals import FONT
 
 _window = None
 
@@ -155,7 +160,90 @@ class sprite:
 
     def Update(*args,**kargs): ...
 
-    def Empty(): ...
+class textZone(sprite):
+    """class pour ajouter automatiquement du text"""
+    def __init__(self, name, isactive=True,text_color='grey', layer=0):
+        self.name = name
+        self.position = Vector2(0,0)
+        self.scale = Vector2(50,50)
+        self.rect = None
+        self.isactive = isactive
+        self.layer = layer
+        self.handles = []
+
+        self.surface = Surface((self.scale.x,self.scale.y),flags=py.SRCALPHA)
+
+        self.text_color = text_color
+        self.FONT_PATH = FONT
+        self.FONT = py.font.Font(FONT,36)
+        self.text = None
+        self.align_center = False
+
+    def set_text(self,text,wrap_lenght=None,align_center=False,render=True):
+        self.text = text
+        self.align_center = align_center
+
+        if wrap_lenght:
+            text = ""
+            for line in self.text.split("\n"):
+                text += "\n" if text else ""
+                text += textwrap.fill(line,wrap_lenght)
+            self.text = text
+        
+        if render:
+            self.render()
+
+    def render(self):
+        self.scale = self.get_text_size(self.text)
+        self.surface = py.Surface(self.scale(),flags=py.SRCALPHA)
+
+        # calcul positions
+        x = 0
+        y = 0
+        # Blit the text
+        for line in self.text.split("\n"):
+            txt_surface = self.FONT.render(line, True,self.text_color)
+            if self.align_center:
+                x = self.surface.get_width()//2 - txt_surface.get_width()//2
+            self.surface.blit(txt_surface,(x,y))
+            
+            y += txt_surface.get_height()
+
+        self.surface = self.surface.convert_alpha()
+        self.actualize_scale()
+        return self.surface
+
+    def get_text_size(self,text:str):
+        max_text = text.split("\n")[0]
+        for line in text.split("\n")[1:]:
+            if self.FONT.size(max_text)[0]<self.FONT.size(line)[0]:
+                max_text = line
+        
+        x = self.FONT.size(max_text)[0]
+        y = 0
+
+        for line in text.split("\n"):
+            y += self.FONT.size(line)[1]
+
+        return Vector2(x,y)
+
+    def set_font(self,name=None,size=36):
+        self.FONT = py.font.Font(name,size)
+        self.FONT_PATH = name
+
+    def size_to_scale(self,scale:Vector2):
+        """size the police size to an max area"""
+        _size = self.render().get_size()
+        text_size = 1
+        offset = 1
+
+        while offset>=1:
+            self.FONT = py.font.Font(self.FONT_PATH,int(text_size + offset))
+            _size = self.render().get_size()
+            if _size[0] > scale.x or _size[1] > scale.y:
+                break
+            else:
+                text_size += offset
 
 class Button(sprite):
     """
@@ -183,6 +271,27 @@ class Button(sprite):
                     return False
         else:
             return True
+
+    def set_text(self,text,color="grey",padding=0.05):
+        _text = textZone(
+            name=f"textZone_{self.name}",
+            text_color=color
+        )
+
+        _text.set_text(text,align_center=True,render=False)
+
+        _size = Vector2(self.surface.get_width()*(1 - padding*2),self.surface.get_height()*(1 - padding*2)) if type(padding)==float else Vector2(self.surface.get_width() - padding,self.surface.get_height() - padding)
+        
+        _text.size_to_scale(_size)
+
+        _render = _text.render()
+
+        _pos = (
+            self.surface.get_width()//2 - _render.get_width()//2,
+            self.surface.get_height()//2 - _render.get_height()//2
+            )
+        
+        self.surface.blit(_render,_pos)
 
 class InputBox(sprite):
     """

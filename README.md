@@ -1,3 +1,4 @@
 # a faire
 
-scale pas temporaire mais globale
+Finir intégration zone texte dans input et alert box
+corriger bad pseudo auto isactive

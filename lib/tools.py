@@ -8,6 +8,13 @@ class Vector2:
         self.x = x
         self.y = y
 
+    def __str__(self) -> str:
+        return f'({self.x},{self.y})'
+
+    def __call__(self) -> tuple:
+        """return a tuple of the vector"""
+        return (self.x,self.y)
+
 def attr_exist(name,obj):
     """
     vérification que la fonction ne va pas en écraser une autre

@@ -14,10 +14,12 @@ game.actual_menu = principale
 def exit_button():
     _button = Button(
         name="exit",
-        path= PATH / "assets" / "Exit_Button.png"
+        path= PATH / "assets" / "Empty_Node.png"
         )
 
     _button.set_position(Vector2(0.5,0.66))
+
+    _button.set_text("Exit",padding=0.15)
 
     @_button.on_click
     def next_menu():
@@ -34,60 +36,13 @@ def play_button():
 
     _button.set_position(Vector2(0.5,0.33))
 
-    _button.set_text("Play",color="grey",padding=0.15)
+    _button.set_text("Play",color="white",padding=0.15)
     
     @_button.on_click
     def next_menu():
         game.actual_menu = principale.get_child("Play")
 
     return _button
-
-@principale.add_sprite
-def play_alert():
-    _alert = AlertBox(
-        name="Alert",
-        path=PATH / "assets" / "Empty_Node.png",
-        layer=1
-        )
-
-    _alert.padding = 0.1
-
-    _alert.set_text(
-        """Hello Word !
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sollicitudin quam enim, at iaculis mauris congue nec. Curabitur sed massa id ante consectetur congue. Nam et est non sem pharetra varius quis vitae risus. Cras lectus enim, sodales ac neque a, pulvinar elementum ante. Nam pellentesque tincidunt ligula, a sagittis felis semper sit amet. Sed sagittis euismod tempor. Nulla facilisi.
-        """,
-        wrap_lenght=50,
-        align_center=True)
-
-    _alert.set_position(Vector2(0.5,0.33))
-    _alert.set_scale(Vector2(1.5,2.0))
-
-    @_alert.add_button
-    def validate_button():
-        _button = Button(
-            name=f"validate_alert_{_alert.name}",
-            path=PATH / "assets" / "Continue.png",
-            layer=_alert.layer
-        )
-        
-        _button.set_position(Vector2(0.5,1.0),parent=_alert)
-        _button.set_scale(Vector2(0.5,0.5))
-
-        @_button.on_click
-        def close():
-            _alert.isactive = False
-            for _button in _alert.childs:
-                _button.isactive = False
-        
-        return _button
-
-    @_alert.on_enter
-    def close():
-        _alert.isactive = False
-        for _button in _alert.childs:
-            _button.isactive = False
-
-    return _alert
 #endregion
 
 #region connection portal
@@ -97,11 +52,13 @@ secondaire = Menu("Play",parent="principale",childs="Connecting",background= PAT
 def back_button():
     _button = Button(
         name="back",
-        path=PATH / "assets" / "Back_Button.png"
+        path=PATH / "assets" / "Empty_Node.png"
     )
         
     _button.set_scale(Vector2(0.46,0.5))
     _button.set_position(Vector2(0.35,0.5))
+
+    _button.set_text("Back",padding=0.15)
 
     @_button.on_click
     def back():
@@ -120,11 +77,13 @@ def connection_server(name):
 def validate_button():
     _button = Button(
         name="validate",
-        path=PATH / "assets" / "Load.png"
+        path=PATH / "assets" / "Empty_node.png"
     )
         
     _button.set_scale(Vector2(0.46,0.5))
     _button.set_position(Vector2(0.65,0.5))
+
+    _button.set_text("Connect",padding=0.15)
 
     @_button.on_click
     def get_pseudo():
@@ -163,13 +122,19 @@ def setup():
 def connection():
     _button = Button(
         name="connecting",
-        path=PATH / "assets" / "connecting.png"
+        path=PATH / "assets" / "Empty_Node.png"
     )
         
     _button.set_position(Vector2(0.5,0.4))
 
+    _button.set_text("Connection",padding=0.15)
+
     @_button.Event(None)
     def check_ready():
+        time = (py.time.get_ticks() % 4000)//1000
+        _text = "Connection" + "."*time + " "*(3-time)
+        _button.set_text(_text,padding=0.15)
+        
         if server.ready:
             game.actual_menu = connecting.get_child("Online_Menu")
 
@@ -189,7 +154,7 @@ def bad_pseudo():
     _alert.set_position(Vector2(0.5,0.4))
 
     _alert.set_text("""BAD PSEUDO
-    Le pseudo que vous avez choisi ne convient pas, veuillez en essayer un autre
+    The pseudo you choose isn't correct or already takken, please try another one.
     """,wrap_lenght=30,align_center=True)
 
     return _alert
@@ -208,8 +173,8 @@ def bad_conn():
     _alert.set_position(Vector2(0.5,0.4))
 
     _alert.set_text("""CONNECTION FAILED
-    La connexion au serveur a raté, veuillez vérifier votre accès à internet.
-    """,wrap_lenght=30,align_center=True)
+    The connection to the server failed, check your connection to internet and try again. If this doesn't work again check status of the server.
+    """,wrap_lenght=50,align_center=True)
 
     return _alert
 
@@ -245,10 +210,12 @@ online_menu = Menu("Online_Menu",parent="Play",background= PATH / "assets" / "bg
 def back_button():
     _button = Button(
         name="back",
-        path=PATH / "assets" / "Back_Button.png"
+        path=PATH / "assets" / "Empty_Node.png"
     )
         
     _button.set_position(Vector2(0.5,0.66))
+
+    _button.set_text("Back",padding=0.15)
 
     @_button.on_click
     def back():

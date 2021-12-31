@@ -1,13 +1,10 @@
-import pygame as py
-from pygame.font import Font
-from pygame.surface import Surface
-from lib.tools import Vector2
+import pygame as py             # PYGAME
+from lib.tools import Vector2   # personnal tools
 from pygame.locals import *     # PYGAME constant & functions
-from sys import exit           # exit script
-from time import time
-import textwrap
+from sys import exit            # exit script
+import textwrap                 # wrap text automatically
 
-from var.globals import FONT
+from var.globals import FONT    # global var
 
 _window = None
 
@@ -166,7 +163,7 @@ class sprite:
 
 class textZone(sprite):
     """class pour ajouter automatiquement du text"""
-    def __init__(self, name, isactive=True,text_color='grey', layer=0):
+    def __init__(self, name, isactive=True,text_color='white', layer=0):
         self.name = name
         self.position = Vector2(0,0)
         self.scale = Vector2(50,50)
@@ -175,7 +172,7 @@ class textZone(sprite):
         self.layer = layer
         self.handles = []
 
-        self.surface = Surface((self.scale.x,self.scale.y),flags=py.SRCALPHA)
+        self.surface = py.Surface((self.scale.x,self.scale.y),flags=py.SRCALPHA)
 
         self.text_color = text_color
         self.FONT_PATH = FONT
@@ -276,7 +273,10 @@ class Button(sprite):
         else:
             return True
 
-    def set_text(self,text,color="grey",padding=0.05):
+    def set_text(self,text,color="white",padding=0.05):
+        
+        self.surface = py.transform.scale(py.image.load(self.file).convert_alpha(),(self.scale.x,self.scale.y))
+        
         _text = textZone(
             name=f"textZone_{self.name}",
             text_color=color
@@ -322,11 +322,11 @@ class InputBox(sprite):
     def get_text_size(self):
         i = self.surface.get_height()
         temp = py.font.Font(None,i)
-        size_temp = temp.size("A"*self.max_char)
+        size_temp = temp.size("A"*max(self.max_char,len(self.paceHolder)))
         while int(self.surface.get_height()*0.80)<size_temp[1] or int(self.surface.get_width()*0.9)<size_temp[0]:
             i -=1
             temp = py.font.Font(None,i)
-            size_temp = temp.size("A"*self.max_char)
+            size_temp = temp.size("A"*max(self.max_char,len(self.paceHolder)))
         return(i)
 
     def on_enter(self,func):
@@ -369,7 +369,7 @@ class InputBox(sprite):
         y = int(render.get_height()//2 - self.txt_surface.get_height()//2)
         # Blit the text.
         render.blit(self.txt_surface,(x,y))
-        if time() % 1 > 0.5 and self.active:
+        if py.time.get_ticks() % 1000 > 500 and self.active:
             cursor = Rect(self.txt_surface.get_rect(topleft=(x,y-5)).topright, (3, self.txt_surface.get_rect().height))
             py.draw.rect(render, self.text_color, cursor)
         if self.isactive:

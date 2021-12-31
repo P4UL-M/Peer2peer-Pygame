@@ -1,3 +1,4 @@
+from os import name
 import pygame as py
 from pygame.font import Font
 from pygame.surface import Surface
@@ -377,7 +378,6 @@ class AlertBox(sprite):
     class de alertbox autonome, permet de rentrer d'afficher une erreur facilement
     """
     def __init__(self,name,path,color='black',text_color='grey',padding=0.05,isactive=True,layer=0):
-        
         super().__init__(name,path,isactive,layer)
 
         self.color = Color(color)
@@ -385,9 +385,7 @@ class AlertBox(sprite):
         self.text_color = Color(text_color)
         self.padding = padding
 
-        self.text_size = 10
-
-        self.FONT = py.font.Font(None,self.text_size)
+        self.FONT = py.font.Font(FONT,36)
 
         self.childs:list[Button] = list()
   
@@ -426,20 +424,6 @@ class AlertBox(sprite):
         for _button in self.childs:
             self.rect = self.rect.union(_button.rect)
 
-    def get_text_size(self):
-        i = self.surface.get_height()
-        temp = py.font.Font(None,i)
-        max_text = self.text.split("\n")[0]
-        for line in self.text.split("\n")[1:]:
-            if temp.size(max_text)[0]<temp.size(line)[0]:
-                max_text = line
-        size_temp = temp.size(max_text)
-        while int(self.surface.get_height()*(1-self.padding*2))<size_temp[1]*len(self.text.split("\n")) or int(self.surface.get_width()*(1-self.padding*2))<size_temp[0]:
-            i -=1
-            temp = py.font.Font(None,i)
-            size_temp = temp.size(max_text)
-        return(i)
-
     def on_enter(self,func):
         """
         Ce décorateur crée une fonction qui ajoute celle ci à la liste des fonctions.
@@ -464,27 +448,25 @@ class AlertBox(sprite):
     def set_text(self,text,wrap_lenght=None,align_center=False):
         self.text = text
 
-        if wrap_lenght:
-            text = ""
-            for line in self.text.split("\n"):
-                text += "\n" if text else ""
-                text += textwrap.fill(line,wrap_lenght)
-            self.text = text
-        self.text_size = self.get_text_size()
-        self.FONT = py.font.Font(None,self.text_size)
+        _text = textZone(
+            name=f'text_{self.name}',
+            text_color=self.text_color
+        )
+        
+        _text.set_text(text,wrap_lenght,align_center,render=False)
 
-        self.surface:py.Surface = py.image.load(self.file).convert_alpha()
+        _size = Vector2(self.surface.get_width()*(1 - self.padding*2),self.surface.get_height()*(1 - self.padding*2)) if type(self.padding)==float else Vector2(self.surface.get_width() - self.padding,self.surface.get_height() - self.padding)
+        
+        _text.size_to_scale(_size)
 
-        # calcul positions
-        x = int(self.surface.get_width()*self.padding)
-        y = int(self.surface.get_height()*self.padding)
-        # Blit the text.
-        for line in self.text.split("\n"):
-            txt_surface = self.FONT.render(line, True, self.text_color)
-            if align_center:
-                x = self.surface.get_width()//2 - txt_surface.get_width()//2
-            self.surface.blit(txt_surface,(x,y))
-            y += txt_surface.get_height()
+        _render = _text.render()
+
+        _pos = (
+            self.surface.get_width()//2 - _render.get_width()//2,
+            self.surface.get_height()//2 - _render.get_height()//2
+            )
+        
+        self.surface.blit(_render,_pos)
 
     def Event(self, event):
         print("can't use this on an alertbox")

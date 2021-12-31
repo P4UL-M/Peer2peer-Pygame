@@ -50,6 +50,8 @@ def play_alert():
         layer=1
         )
 
+    _alert.padding = 0.1
+
     _alert.set_text(
         """Hello Word !
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sollicitudin quam enim, at iaculis mauris congue nec. Curabitur sed massa id ante consectetur congue. Nam et est non sem pharetra varius quis vitae risus. Cras lectus enim, sodales ac neque a, pulvinar elementum ante. Nam pellentesque tincidunt ligula, a sagittis felis semper sit amet. Sed sagittis euismod tempor. Nulla facilisi.
@@ -175,7 +177,9 @@ def bad_pseudo():
         path=PATH / "assets" / "Empty_Node.png",
         isactive=False
     )
-        
+
+    _alert.padding = 0.1
+
     _alert.set_position(Vector2(0.5,0.4))
 
     _alert.set_text("""BAD PSEUDO

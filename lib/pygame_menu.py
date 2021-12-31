@@ -20,7 +20,7 @@ class Window(object):
         initialisation de pygame et de la fenêtre et des variables globales
         """
         py.init()   
-        self.screen:py.Surface = py.display.set_mode((size.x, size.y),0,32)
+        self.screen:py.Surface = py.display.set_mode(size(),0,32)
         py.display.set_caption(name)
 
         self.actual_menu:Menu = None

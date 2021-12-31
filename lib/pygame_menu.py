@@ -16,7 +16,7 @@ class Window(object):
         """
         initialisation de pygame et de la fenêtre et des variables globales
         """
-        py.init()   
+        py.init()
         self.screen:py.Surface = py.display.set_mode(size(),0,32)
         py.display.set_caption(name)
 
@@ -27,7 +27,7 @@ class Window(object):
             self.background = py.image.load(background).convert() # tuile pour le background
             self.background = py.transform.scale(self.background, (size.x, size.y))
         except FileNotFoundError:
-            print("Your principal background doesn't seems to exist")   
+            print("Your principal background doesn't seems to exist")  
         
         global _window
         _window = self
@@ -180,7 +180,7 @@ class textZone(sprite):
         self.text = None
         self.align_center = False
 
-    def set_text(self,text,wrap_lenght=None,align_center=False,render=True):
+    def set_text(self,text,wrap_lenght=None,align_center=False):
         self.text = text
         self.align_center = align_center
 
@@ -191,8 +191,7 @@ class textZone(sprite):
                 text += textwrap.fill(line,wrap_lenght)
             self.text = text
         
-        if render:
-            self.render()
+        self.render()
 
     def render(self):
         self.scale = self.get_text_size(self.text)
@@ -214,7 +213,9 @@ class textZone(sprite):
         self.actualize_scale()
         return self.surface
 
-    def get_text_size(self,text:str):
+    def get_text_size(self,text:str=None):
+        if text==None:
+            text=self.text
         max_text = text.split("\n")[0]
         for line in text.split("\n")[1:]:
             if self.FONT.size(max_text)[0]<self.FONT.size(line)[0]:
@@ -234,15 +235,15 @@ class textZone(sprite):
 
     def size_to_scale(self,scale:Vector2):
         """size the police size to an max area"""
-        _size = self.render().get_size()
+        _size = self.get_text_size()()
         text_size = 1
-        offset = 1
+        offset = 32
 
         while offset>=1:
             self.FONT = py.font.Font(self.FONT_PATH,int(text_size + offset))
-            _size = self.render().get_size()
+            _size = self.get_text_size()()
             if _size[0] > scale.x or _size[1] > scale.y:
-                break
+                offset /= 2
             else:
                 text_size += offset
 
@@ -274,15 +275,15 @@ class Button(sprite):
             return True
 
     def set_text(self,text,color="white",padding=0.05):
-        
+
         self.surface = py.transform.scale(py.image.load(self.file).convert_alpha(),(self.scale.x,self.scale.y))
         
         _text = textZone(
             name=f"textZone_{self.name}",
             text_color=color
-        )
+        ) 
 
-        _text.set_text(text,align_center=True,render=False)
+        _text.set_text(text,align_center=True)  
 
         _size = Vector2(self.surface.get_width()*(1 - padding*2),self.surface.get_height()*(1 - padding*2)) if type(padding)==float else Vector2(self.surface.get_width() - padding,self.surface.get_height() - padding)
         
@@ -294,7 +295,7 @@ class Button(sprite):
             self.surface.get_width()//2 - _render.get_width()//2,
             self.surface.get_height()//2 - _render.get_height()//2
             )
-        
+         
         self.surface.blit(_render,_pos)
 
 class InputBox(sprite):
@@ -457,7 +458,7 @@ class AlertBox(sprite):
             text_color=self.text_color
         )
         
-        _text.set_text(text,wrap_lenght,align_center,render=False)
+        _text.set_text(text,wrap_lenght,align_center)
 
         _size = Vector2(self.surface.get_width()*(1 - self.padding*2),self.surface.get_height()*(1 - self.padding*2)) if type(self.padding)==float else Vector2(self.surface.get_width() - self.padding,self.surface.get_height() - self.padding)
         

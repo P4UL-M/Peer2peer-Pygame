@@ -1,4 +1,3 @@
-from os import name
 import pygame as py
 from pygame.font import Font
 from pygame.surface import Surface
@@ -12,7 +11,7 @@ from var.globals import FONT
 
 _window = None
 
-class Window():
+class Window(object):
     """
     class principale de pygame qui gère la fenetre
     """
@@ -36,6 +35,11 @@ class Window():
         global _window
         _window = self
     
+    def __setattr__(self, __name: str, __value):
+        super().__setattr__(__name,__value)
+        if __name == "actual_menu" and type(__value)==Menu:
+            __value.setup()
+
     def run(self):
         """
         fonction principale du jeu qui gère la fenetre
@@ -517,7 +521,7 @@ class Menu:
             self.buttons.append(_button)
         else:
             raise TypeError("You must return a sprite based class to add, type returned was :",type(_button))
-    
+
     def Update(self):
         """
         fonction update des bouton du menu avec en premier les event, ensuite les function effectué chaque frame et finalement l'affichage
@@ -570,3 +574,11 @@ class Menu:
         for button in self.buttons:
             if button.name == name:
                 return button
+
+    def set_setup(self,func):
+        """
+        this function add a setup function execute when the menu is change
+        """
+        setattr(self,"setup",func)
+
+    def setup(self): ...

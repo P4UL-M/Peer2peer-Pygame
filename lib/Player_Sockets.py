@@ -54,9 +54,9 @@ class Client(socket.socket):
                     self.handles[ctx.event](ctx)
                 else:
                     print("Event not found :",ctx.event)
-        # except ConnRejected:
-        #     print(f"connection to {self.HOST} was rejected")
-        except ConnIterupted:
+        except ConnRejected: # trigger by bad name event
+            print(f"connection to {self.HOST} was rejected")
+        except ConnIterupted: # trigger by lost of connection
             self.ready = False
             print(f"disconnected from {self.HOST}, connection was stop by the peer")
         except Exception as e:

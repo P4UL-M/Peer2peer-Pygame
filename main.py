@@ -128,8 +128,8 @@ def validate_button():
 
     @_button.on_click
     def get_pseudo():
-        connection_server(secondaire.get_button("pseudoBox").text)
         game.actual_menu = secondaire.get_child("Connecting")
+        connection_server(secondaire.get_button("pseudoBox").text)
 
     return _button
 
@@ -145,14 +145,19 @@ def pseudo_input():
 
     @_inputbox.on_enter
     def start_menu():
-        connection_server(_inputbox.text)
         game.actual_menu = secondaire.get_child("Connecting")
+        connection_server(_inputbox.text)
 
     return _inputbox
 #endregion
 
 #region connection wait screen
 connecting = Menu("Connecting",parent="Play",childs="Online_Menu",background= PATH / "assets" / "bg_control.png")
+
+@connecting.set_setup
+def setup():
+    connecting.get_button("bad_pseudo").isactive = False
+    connecting.get_button("bad_conn").isactive = False
 
 @connecting.add_sprite
 def connection():

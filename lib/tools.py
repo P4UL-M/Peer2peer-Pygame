@@ -30,3 +30,11 @@ class ConnRejected(Exception):
     """
     def __init__(self, *args: object,**kargs):
         super().__init__(*args,**kargs)
+
+
+class ConnIterupted(Exception):
+    """
+    Execption when server reject connection
+    """
+    def __init__(self, *args: object,**kargs):
+        super().__init__(*args,**kargs)

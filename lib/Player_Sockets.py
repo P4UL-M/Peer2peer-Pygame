@@ -2,7 +2,7 @@ import socket # seriously a comment for that ?
 import json # well no need to explain
 from threading import Thread # because we need multi-threading everywhere
 from _thread import interrupt_main #to stop just this programme from a thread
-from lib.tools import ConnRejected
+from lib.tools import ConnRejected,ConnIterupted
 
 class context:
     """
@@ -46,7 +46,7 @@ class Client(socket.socket):
             while True:
                 data = self.recv(1024)
                 if not data:
-                    raise Exception("connection has stopped")
+                    raise ConnIterupted()
                 data = data.decode('utf-8')
                 print("<- ",data)
                 ctx = context(self,json.loads(data))
@@ -54,8 +54,11 @@ class Client(socket.socket):
                     self.handles[ctx.event](ctx)
                 else:
                     print("Event not found :",ctx.event)
-        except ConnRejected:
-            print(f"connection to {self.HOST} was rejected")
+        # except ConnRejected:
+        #     print(f"connection to {self.HOST} was rejected")
+        except ConnIterupted:
+            self.ready = False
+            print(f"disconnected from {self.HOST}, connection was stop by the peer")
         except Exception as e:
             print(f"disconnected from {self.HOST}, {e}")
 

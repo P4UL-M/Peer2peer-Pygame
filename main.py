@@ -114,7 +114,7 @@ def connection_server(name):
     try:
         server.run()
     except ConnectionRefusedError:
-        connecting.get_button("bad_pseudo").isactive = True
+        connecting.get_button("bad_conn").isactive = True
 
 @secondaire.add_sprite
 def validate_button():
@@ -175,6 +175,7 @@ def bad_pseudo():
     _alert = AlertBox(
         name="bad_pseudo",
         path=PATH / "assets" / "Empty_Node.png",
+        text_color="white",
         isactive=False
     )
 
@@ -184,6 +185,25 @@ def bad_pseudo():
 
     _alert.set_text("""BAD PSEUDO
     Le pseudo que vous avez choisi ne convient pas, veuillez en essayer un autre
+    """,wrap_lenght=30,align_center=True)
+
+    return _alert
+
+@connecting.add_sprite
+def bad_conn():
+    _alert = AlertBox(
+        name="bad_conn",
+        path=PATH / "assets" / "Empty_Node.png",
+        text_color="white",
+        isactive=False
+    )
+
+    _alert.padding = 0.1
+
+    _alert.set_position(Vector2(0.5,0.4))
+
+    _alert.set_text("""CONNECTION FAILED
+    La connexion au serveur a raté, veuillez vérifier votre accès à internet.
     """,wrap_lenght=30,align_center=True)
 
     return _alert
@@ -229,6 +249,11 @@ def back_button():
     def back():
         server.close()
         game.actual_menu = online_menu.get_parent()
+
+    @_button.Event(None)
+    def disconnected():
+        if not server.ready:
+            game.actual_menu = online_menu.get_parent()
 
     return _button
 #endregion

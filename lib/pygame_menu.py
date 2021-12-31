@@ -311,7 +311,7 @@ class InputBox(sprite):
 
         self.text_size = self.get_text_size()
 
-        self.FONT = py.font.Font(None,self.text_size)
+        self.FONT = py.font.Font(FONT,self.text_size)
         self.txt_surface = self.FONT.render(self.paceHolder, True, self.text_color)
         self.active = False
 

@@ -207,13 +207,48 @@ def back_button():
 online_menu = Menu("Online_Menu",parent="Play",background= PATH / "assets" / "bg_control.png")
 
 @online_menu.add_sprite
+def join_button():
+    _button = Button(
+        name="join",
+        path=PATH / "assets" / "Empty_Node.png"
+    )
+        
+    _button.set_position(Vector2(0.5,0.3))
+
+    _button.set_text("Join",padding=0.15)
+
+    @_button.on_click
+    def join():
+        pass
+
+    return _button
+
+@online_menu.add_sprite
+def host_button():
+    _button = Button(
+        name="host",
+        path=PATH / "assets" / "Empty_Node.png"
+    )
+        
+    _button.set_position(Vector2(0.5,0.575))
+
+    _button.set_text("Host",padding=0.15)
+
+    @_button.on_click
+    def host():
+        pass
+
+    return _button
+
+@online_menu.add_sprite
 def back_button():
     _button = Button(
         name="back",
         path=PATH / "assets" / "Empty_Node.png"
     )
         
-    _button.set_position(Vector2(0.5,0.66))
+    _button.set_position(Vector2(0.5,0.80))
+    _button.set_scale(Vector2(0.5,0.5))
 
     _button.set_text("Back",padding=0.15)
 

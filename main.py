@@ -2,6 +2,7 @@ from lib.pygame_menu import *
 from var.globals import PATH
 from client_main import server
 from lib.tools import ConnRejected
+import host
 
 game = Window("MySuperGame",Vector2(1000,800),PATH / "assets" / "bg.png")
 

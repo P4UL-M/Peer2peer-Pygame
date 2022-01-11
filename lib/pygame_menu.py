@@ -23,6 +23,7 @@ class Menu_Manager(object):
 
         self.actual_menu:Menu = None
         self.menus:list[Menu] = []
+        self.running = False
         # ******** le background devrait etre gérer indivituellement pour les menu en option pour overidecelui là
         if background: 
             try:
@@ -49,7 +50,8 @@ class Menu_Manager(object):
         """
         fonction principale du jeu qui gère la fenetre
         """
-        while True:
+        self.running = True
+        while self.running:
             if self.actual_menu.background == None:
                 self.screen.blit(self.background,(0,0))
             else:
@@ -57,13 +59,17 @@ class Menu_Manager(object):
             self.actual_menu.Update()
             py.display.update()
 
+    def stop(self):
+        """
+        stop the current thread de la classe
+        """
+        self.running = False
+
     def destroy(self):
         """
-        destructeur de la classe
+        Use to stop the local thread
         """
-        print('Bye!')
-        py.quit()   # ferme la fenêtre principale
-        exit()      # termine tous les process en cours
+        exit()
 
 class sprite:
     def __init__(self,name,path,isactive,layer):

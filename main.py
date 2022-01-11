@@ -29,7 +29,7 @@ def exit_button():
     _button.set_text("Exit",padding=0.15)
 
     @_button.on_click
-    def next_menu():
+    def stop():
         game.destroy()
 
     return _button

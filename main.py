@@ -1,10 +1,10 @@
-from lib.pygame_menu import *
 from var.globals import PATH,FONT    # global var
 from client_main import server
 from lib.tools import ConnRejected
 
 import host
 import pygame             # PYGAME
+from pygame_easy_menu import *
 
 
 pygame.init()

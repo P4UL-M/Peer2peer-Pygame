@@ -1,33 +1,37 @@
 import pygame as py             # PYGAME
-from lib.tools import Vector2   # personnal tools
 from pygame.locals import *     # PYGAME constant & functions
+
+from lib.tools import Vector2   # personnal tools
+
 from sys import exit            # exit script
 import textwrap                 # wrap text automatically
 
-from var.globals import FONT    # global var
-
 _window = None
+FONT = None
 
-class Window(object):
+class Menu_Manager(object):
     """
     class principale de pygame qui gère la fenetre
     """
-    def __init__(self,name,size:Vector2,background) -> None:
+    def __init__(self,window=None,pygame=None,name=None,size:Vector2=None,background=None) -> None:
         """
         initialisation de pygame et de la fenêtre et des variables globales
         """
-        py.init()
-        self.screen:py.Surface = py.display.set_mode(size(),0,32)
-        py.display.set_caption(name)
+        if not window and not pygame:
+            raise RuntimeError("You must pass either your window either pygame to add a menu manager")
+        self.screen:py.Surface = pygame.display.set_mode(size(),0,32) if not window else window
 
         self.actual_menu:Menu = None
         self.menus:list[Menu] = []
         # ******** le background devrait etre gérer indivituellement pour les menu en option pour overidecelui là
-        try:
-            self.background = py.image.load(background).convert() # tuile pour le background
-            self.background = py.transform.scale(self.background, (size.x, size.y))
-        except FileNotFoundError:
-            print("Your principal background doesn't seems to exist")  
+        if background: 
+            try:
+                self.background = py.image.load(background).convert() # tuile pour le background
+                self.background = py.transform.scale(self.background, (size.x, size.y))
+            except FileNotFoundError:
+                print("Your principal background doesn't seems to exist")
+        else:
+            self.background = py.Surface(size())
         
         global _window
         _window = self
@@ -36,6 +40,10 @@ class Window(object):
         super().__setattr__(__name,__value)
         if __name == "actual_menu" and type(__value)==Menu:
             __value.setup()
+
+    def set_font(self,path):
+        global FONT
+        FONT = path
 
     def run(self):
         """

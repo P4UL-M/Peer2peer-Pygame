@@ -1,10 +1,16 @@
 from lib.pygame_menu import *
-from var.globals import PATH
+from var.globals import PATH,FONT    # global var
 from client_main import server
 from lib.tools import ConnRejected
-import host
 
-game = Window("MySuperGame",Vector2(1000,800),PATH / "assets" / "bg.png")
+import host
+import pygame             # PYGAME
+
+
+pygame.init()
+
+game = Menu_Manager(pygame=pygame,name="MySuperGame",size=Vector2(1000,800),background=PATH / "assets" / "bg.png")
+game.set_font(FONT)
 
 principale = Menu("principale",childs=["Play"])
 
@@ -132,7 +138,7 @@ def connection():
 
     @_button.Event(None)
     def check_ready():
-        time = (py.time.get_ticks() % 4000)//1000
+        time = (pygame.time.get_ticks() % 4000)//1000
         _text = "Connection" + "."*time + " "*(3-time)
         _button.set_text(_text,padding=0.15)
         

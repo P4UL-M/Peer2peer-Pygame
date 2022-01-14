@@ -2,7 +2,7 @@ from var.globals import PATH,FONT    # global var
 from client_main import server
 from lib.tools import ConnRejected
 
-import host
+import p2p
 import pygame             # PYGAME
 from pygame_easy_menu import *
 
@@ -272,8 +272,14 @@ def back_button():
     return _button
 #endregion
 
+test = p2p.Host()
+test.start()
+
 if __name__ == '__main__':
     try:
         game.run()
     except KeyboardInterrupt:  # interruption clavier CTRL-C: appel à la méthode destroy() de game.
         game.destroy()
+    except SystemExit:
+        pygame.quit()
+        print("bye")

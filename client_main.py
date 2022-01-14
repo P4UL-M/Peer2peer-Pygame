@@ -1,4 +1,4 @@
-from lib.Player_Sockets import Client
+from lib.Player_Sockets import *
 
 server = Client()
 

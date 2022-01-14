@@ -1,8 +1,6 @@
 import socket # seriously a comment for that ?
 import json # well no need to explain
 from threading import Thread # because we need multi-threading everywhere
-from _thread import interrupt_main #to stop just this programme from a thread
-from lib.tools import ConnRejected,ConnIterupted
 
 class context:
     """
@@ -86,3 +84,18 @@ class Client(socket.socket):
         print("->",message)
         data = str.encode(message)
         self.sendall(data)
+
+
+class ConnRejected(Exception):
+    """
+    Execption when server reject connection
+    """
+    def __init__(self, *args: object,**kargs):
+        super().__init__(*args,**kargs)
+
+class ConnIterupted(Exception):
+    """
+    Execption when server reject connection
+    """
+    def __init__(self, *args: object,**kargs):
+        super().__init__(*args,**kargs)

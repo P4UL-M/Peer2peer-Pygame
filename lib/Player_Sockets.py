@@ -85,7 +85,6 @@ class Client(socket.socket):
         data = str.encode(message)
         self.sendall(data)
 
-
 class ConnRejected(Exception):
     """
     Execption when server reject connection

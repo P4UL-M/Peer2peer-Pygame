@@ -39,11 +39,13 @@ class Host(socket.socket):
 
     def handle(self):
         self.peer, self.addr = self.accept()
+        print("connection")
         with self.peer as conn:
             while True:
                 data = conn.recv(1024)
                 if not data:
                     break
+                print(data)
                 # launch event from here
 
     def cleaning(self):

@@ -14,12 +14,14 @@ class Host(socket.socket):
     def setup_port(self,state=True):
         self.upnp.discover()
         self.upnp.selectigd()
-        if state:
-            res = self.upnp.addportmapping(self.address[1], 'TCP', self.upnp.lanaddr, self.address[1], 'testing', '')    
-        else:
-            res = self.upnp.deleteportmapping(self.address[1], 'TCP')
-        
-        print("Port modifier" if res else "Error on port setup")
+        try:
+            if state:
+                res = self.upnp.addportmapping(self.address[1], 'TCP', self.upnp.lanaddr, self.address[1], 'testing', '')    
+            else:
+                res = self.upnp.deleteportmapping(self.address[1], 'TCP')
+            print("Port modifier" if res else "Error on port setup")
+        except Exception:
+            print("Error on port setup")
 
     def start(self):
         self.thread = Thread(target=self.run,daemon=True)
@@ -45,7 +47,10 @@ class Host(socket.socket):
                 # launch event from here
 
     def cleaning(self):
-        self.setup_port(False)
+        if self.upnp.getspecificportmapping(self.address[1], "TCP") is None:
+            pass
+        else:
+            self.setup_port(False)
 
 class Peer(socket.socket):
     def __init__(self,socket):

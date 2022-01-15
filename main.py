@@ -6,7 +6,6 @@ from p2p import *
 import pygame             # PYGAME
 from pygame_easy_menu import *
 
-
 pygame.init()
 
 game = Menu_Manager(pygame=pygame,name="MySuperGame",size=Vector2(1000,800),background=PATH / "assets" / "bg.png")

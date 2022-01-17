@@ -14,6 +14,13 @@ class context:
         for name,elt in message.items():
             setattr(self,name,elt)
 
+class ConnIterupted(Exception):   
+    """
+    Execption when server reject connection
+    """
+    def __init__(self, *args: object,**kargs):
+        super().__init__(*args,**kargs)
+
 class Client(socket):
     """
     class discussion avec le server
@@ -59,17 +66,14 @@ class Client(socket):
             while True:
                 data = self.recv(1024)
                 if not data:
-                    raise Exception("Connection has stopped")
-                data = data.decode('utf-8')  
-                print(f"<- {self.client_name} -",data)
+                    raise ConnIterupted("Connection has stopped")
+                data = data.decode('utf-8')
                 ctx = context(self,json.loads(data))
                 if ctx.event in self.handles.keys():
                     self.handles[ctx.event](self,ctx)
-                else:
-                    print("Event not found :",ctx.event)
         except Exception as e:
             print(f"diconnected from {self.client_name} : {e}")
-            if self.client_name != "":
+            if self.client_name in _server.Clients_list.keys():
                 del _server.Clients_list[self.client_name]
 
     def Event(func):

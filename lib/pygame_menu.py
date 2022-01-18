@@ -585,7 +585,7 @@ class Menu:
             if _menu.name == self.parent:
                 return _menu
 
-    def get_button(self,name):
+    def get_sprite(self,name):
         for button in self.buttons:
             if button.name == name:
                 return button

@@ -77,7 +77,7 @@ def connection_server(name):
     try:
         server.run()
     except ConnectionRefusedError:
-        connecting.get_button("bad_conn").isactive = True
+        connecting.get_sprite("bad_conn").isactive = True
 
 @secondaire.add_sprite
 def validate_button():
@@ -94,7 +94,7 @@ def validate_button():
     @_button.on_click
     def get_pseudo():
         game.actual_menu = secondaire.get_child("Connecting")
-        connection_server(secondaire.get_button("pseudoBox").text)
+        connection_server(secondaire.get_sprite("pseudoBox").text)
 
     return _button
 
@@ -121,8 +121,8 @@ connecting = Menu("Connecting",parent="Play",childs="Online_Menu",background= PA
 
 @connecting.set_setup
 def setup():
-    connecting.get_button("bad_pseudo").isactive = False
-    connecting.get_button("bad_conn").isactive = False
+    connecting.get_sprite("bad_pseudo").isactive = False
+    connecting.get_sprite("bad_conn").isactive = False
 
 @connecting.add_sprite
 def connection():

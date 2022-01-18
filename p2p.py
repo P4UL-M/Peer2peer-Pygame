@@ -1,7 +1,7 @@
 import socket,atexit,logging,json,miniupnpc
 from threading import Thread
 
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO,format='%(asctime)s - %(levelname)s - %(message)s')
 
 class context:
     """
@@ -26,6 +26,7 @@ class Host(socket.socket):
     def __init__(self,host="0.0.0.0",port=61465):
         super().__init__(socket.AF_INET, socket.SOCK_STREAM)
         self.address = (host,port)
+        self.peer = None
         self.upnp = miniupnpc.UPnP()
         self.upnp.discoverdelay = 10
 
@@ -37,9 +38,9 @@ class Host(socket.socket):
                 res = self.upnp.addportmapping(self.address[1], 'TCP', self.upnp.lanaddr, self.address[1], 'testing', '')    
             else:
                 res = self.upnp.deleteportmapping(self.address[1], 'TCP')
-            print("Port modifier" if res else "Error on port setup")
+            logging.info("Port modifier" if res else "Error on port setup")
         except Exception:
-            print("Error on port setup")
+            logging.warning("Error on port setup")
 
     def start(self):
         self.thread = Thread(target=self.run,daemon=True)
@@ -53,11 +54,11 @@ class Host(socket.socket):
         try:
             self.handle()
         except Exception as e:
-            logging.info(f"Disconnected from peer {self.peer}, thread will stop.\n\ Error : {e}")
+            logging.info(f"Disconnected from peer {self.peer}, thread will stop.\n"+f"Error : {e}")
             
     def handle(self):
         self.peer, self.addr = self.accept()
-        print("connection")
+        logging.info("connection")
         with self.peer as conn:
             while True:
                 data = conn.recv(1024)
@@ -95,9 +96,8 @@ class Host(socket.socket):
         }
         message.update(args)
         message = json.dumps(message)
-        print(f"- {self.client_name} ->",message)
         data = str.encode(message)
-        self.sendall(data)
+        self.peer.sendall(data)
 
 class Peer(socket.socket):
     
@@ -114,9 +114,10 @@ class Peer(socket.socket):
     def run(self):
         self.connect(self.address)
         try:
+            self.send_message("hello")
             self.handle()
         except Exception as e:
-            logging.info(f"Disconnected from peer {self.peer}, thread will stop.\n\ Error : {e}")
+            logging.info(f"Disconnected from peer {self.address[0]}, thread will stop.\n\ Error : {e}")
                  
     def handle(self):
         while True:
@@ -149,6 +150,5 @@ class Peer(socket.socket):
         }
         message.update(args)
         message = json.dumps(message)
-        print(f"- {self.client_name} ->",message)
         data = str.encode(message)
         self.sendall(data)

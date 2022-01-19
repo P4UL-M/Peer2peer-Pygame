@@ -8,7 +8,7 @@ from pygame_easy_menu import *
 
 pygame.init()
 
-game = Menu_Manager(pygame=pygame,name="MySuperGame",size=Vector2(1000,800),background=PATH / "assets" / "bg.png")
+game = Menu_Manager(name="MySuperGame",size=Vector2(1000,800),background=PATH / "assets" / "bg.png")
 game.set_font(FONT)
 
 principale = Menu("principale",childs=["Play"])
@@ -195,8 +195,10 @@ def bad_name(ctx):
 def back_button():
     _button = Button(
         name="back",
-        path=PATH / "assets" / "Back_Button.png"
+        path=PATH / "assets" / "Empty_Node.png"
     )
+
+    _button.set_text("Back")
         
     _button.set_scale(Vector2(0.5,0.5))
     _button.set_position(Vector2(0.5,0.65))
